@@ -1,0 +1,194 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+  </head>
+  <body>
+    <toast-container></toast-container>
+    <header>
+    <h1>WORDLE</h1>
+    <svg id='stats-icon' onclick="showStatsModal()" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+      <path fill="var(--statsIconColor)" d="M16,11V3H8v6H2v12h20V11H16z M10,5h4v14h-4V5z M4,11h4v8H4V11z M20,19h-4v-6h4V19z"></path>
+    </svg>
+  </header>
+    <main>
+      <span id='game' aria-region='Game Area'>
+      <board-container>
+      <game-board>
+        <row id="row-1">
+          <box id="row-1-box-1"></box>
+          <box id="row-1-box-2"></box>
+          <box id="row-1-box-3"></box>
+          <box id="row-1-box-4"></box>
+          <box id="row-1-box-5"></box>
+        </row>
+        <row id="row-2">
+          <box id="row-2-box-1"></box>
+          <box id="row-2-box-2"></box>
+          <box id="row-2-box-3"></box>
+          <box id="row-2-box-4"></box>
+          <box id="row-2-box-5"></box>
+        </row>
+        <row id="row-3">
+          <box id="row-3-box-1"></box>
+          <box id="row-3-box-3"></box>
+          <box id="row-3-box-2"></box>
+          <box id="row-3-box-4"></box>
+          <box id="row-3-box-5"></box>
+        </row>
+        <row id="row-4">
+          <box id="row-4-box-1"></box>
+          <box id="row-4-box-3"></box>
+          <box id="row-4-box-2"></box>
+          <box id="row-4-box-4"></box>
+          <box id="row-4-box-5"></box>
+        </row>
+        <row id="row-5">
+          <box id="row-5-box-1"></box>
+          <box id="row-5-box-3"></box>
+          <box id="row-5-box-2"></box>
+          <box id="row-5-box-4"></box>
+          <box id="row-5-box-5"></box>
+        </row>
+        <row id="row-6">
+          <box id="row-6-box-1"></box>
+          <box id="row-6-box-3"></box>
+          <box id="row-6-box-2"></box>
+          <box id="row-6-box-4"></box>
+          <box id="row-6-box-5"></box>
+        </row>
+      </game-board>
+    </board-container>
+    <keyboard-container>
+      <keyboard>
+        <keyboard-row>
+          <button id='q'>q</button>
+          <button id='w'>w</button>
+          <button id='e'>e</button>
+          <button id='r'>r</button>
+          <button id='t'>t</button>
+          <button id='y'>y</button>
+          <button id='u'>u</button>
+          <button id='i'>i</button>
+          <button id='o'>o</button>
+          <button id='p'>p</button>
+        </keyboard-row>
+        <keyboard-row>
+          <button id='a'>a</button>
+          <button id='s'>s</button>
+          <button id='d'>d</button>
+          <button id='f'>f</button>
+          <button id='g'>g</button>
+          <button id='h'>h</button>
+          <button id='j'>j</button>
+          <button id='k'>k</button>
+          <button id='l'>l</button>
+        </keyboard-row>
+        <keyboard-row>
+          <button id='enter'>enter</button>
+          <button id='z'>z</button>
+          <button id='x'>x</button>
+          <button id='c'>c</button>
+          <button id='v'>v</button>
+          <button id='b'>b</button>
+          <button id='n'>n</button>
+          <button id='m'>m</button>
+          <button id='backspace'>
+          <svg id='backspaceIcon' xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+            <path fill="var(--color-tone-1)" d="M22 3H7c-.69 0-1.23.35-1.59.88L0 12l5.41 8.11c.36.53.9.89 1.59.89h15c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H7.07L2.4 12l4.66-7H22v14zm-11.59-2L14 13.41 17.59 17 19 15.59 15.41 12 19 8.41 17.59 7 14 10.59 10.41 7 9 8.41 12.59 12 9 15.59z"></path>
+          </svg>
+          </button>
+      </keyboard-row>
+      </keyboard>
+    </keyboard-container>
+  </span>
+    <stats-container>
+      <script>
+        document
+          .querySelector('stats-container')
+            .addEventListener('click', e => {
+              e.target == e.currentTarget && closeStatsModal()
+            })
+      </script>
+      <stats>
+        <header id='statsHeader'>  
+          <h2> Statistics </h2>
+          <svg id='closeIcon' onclick='closeStatsModal(this)' xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+            <path fill="var(--color-tone-3)" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
+          </svg>
+        </header>
+        <div id='statList'>
+          <div class='statBox'>
+            <stat id='gamesPlayed'>0</stat>
+            <div class='statName'> Games Played </div>
+          </div>
+          <div class='statBox'>
+            <stat id='winPercent'>0</stat>
+            <div class='statName'> Win % </div>
+          </div>
+          <div class='statBox'>
+            <stat id='currentStreak'>0</stat>
+            <div class='statName'> Current Streak </div>
+          </div>
+          <div class='statBox'>
+            <stat id='maxStreak'>0</stat>
+            <div class='statName'> Max Streak </div>
+          </div>
+        </div>
+
+        <win-history>
+          <no-history> You Have Not Won Yet </no-history>
+          <graph>
+            <bar-container>
+              <bar id='bar-1'>
+                <bar-text></bar-text>
+              </bar>
+              <div class='barLabel'> 1 </div>
+            </bar-container>
+            <bar-container>
+              <bar id='bar-2'>
+                <bar-text></bar-text>
+              </bar>
+              <div class='barLabel'> 2 </div>
+            </bar-container>
+            <bar-container>
+              <bar id='bar-3'>
+              <bar-text></bar-text>
+              </bar>
+              <div class='barLabel'> 3 </div>
+            </bar-container>
+            <bar-container>
+              <bar id='bar-4'>
+              <bar-text></bar-text>
+              </bar>
+              <div class='barLabel'> 4 </div>
+            </bar-container>
+            <bar-container>
+              <bar id='bar-5'>
+              <bar-text></bar-text>
+              </bar>
+              <div class='barLabel'> 5 </div>
+            </bar-container>
+            <bar-container>
+              <bar id='bar-6'>
+              <bar-text></bar-text>
+              </bar>
+              <div class='barLabel'> 6 </div>
+            </bar-container>
+          </graph>
+        </win-history>
+        <h3> Winning Row Distibution </h3>
+        <footer>
+          <button id='share' onclick='share()'>
+            Share 
+          </button>
+          <button id='newGame' onclick='newGame()'>
+            New Game 
+          </button>
+      </stats>
+    </stats-container>
+    </main>
+  </body>
+  <script src="script.js"></script>
+</html>

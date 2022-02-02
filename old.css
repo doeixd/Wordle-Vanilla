@@ -1,0 +1,47 @@
+
+#008FFF
+
+
+
+footer {
+    display: flex;
+    /* width: 100%; */
+    align-items: flex-end;
+    justify-content: right;
+    /* position: absolute; */
+    /* bottom: 0; */
+    /* padding: 20px; */
+    gap: 20px;
+    flex-basis: 17%;
+    padding: 20px;
+    margin-top: 4%;
+}
+
+win-history {
+    display: flex;
+    /* height: max-content; */
+    flex: 1;
+    justify-content: center;
+    /* width: 88%; */
+}
+
+graph {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 15px 15% 5px;
+    width: 90%;
+}
+
+stats {
+    display: flex;
+    background-color: var(--bgColor);
+    width: 90%;
+    height: 62%;
+    border-radius: 10px;
+    box-shadow: var(--modalShadow);
+    transition: all .2s;
+    max-width: 500px;
+    /* position: relative; */
+    flex-direction: column;
+}
