@@ -1,18 +1,21 @@
 # Wordle - Vanilla
-**A [Wordle](http://www.powerlanguage.co.uk/wordle) clone made using vanilla javascript**
+**A [Wordle](http://www.powerlanguage.co.uk/wordle) clone made using vanilla JavaScript**
+
+## Purpose
+I created this as an educational exercise, and as a project to add to my portfolio.
 
 ## Features
-This wordle clone does not attempt to be a 100% accurate clone, but here are features currently supported 
+This wordle clone does not attempt to be a 100% accurate clone, but here are features currently supported
 
-- [ ] Basic Gameplay
-- [ ] Animations
-- [ ] Keyboard
-- [ ] Stats/Stats Modal
-- [ ] Win Distrubution Graph
-- [ ] Shareable Game Representation
-- [ ] Toast Messages
-- [ ] Persistance
-- [ ] Infinite Gameplay
+- [x] Basic Gameplay
+- [x] Animations
+- [x] Keyboard
+- [x] Stats/Stats Modal
+- [x] Win Distribution Graph
+- [x] Shareable Game Representation
+- [x] Toast Messages
+- [x] Persistence
+- [x] Infinite Gameplay
 
 ## Roadmap
 I intend for Wordle - Vanilla to become more fully featured than the original. Here are some currently planned features.
@@ -22,13 +25,10 @@ I intend for Wordle - Vanilla to become more fully featured than the original. H
 - [ ] One-Per-Day Mode with Timer
 - [ ] Options Center
 - [ ] Progressive Web App Support
-- [ ] More Intresting Stats e.g. Colored Stats/Animated Graph
+- [ ] More Interesting Stats e.g. Colored Stats/Animated Graph
 - [ ] User Generated Games
 - [ ] Hints
 - [ ] Variable Wordle Lengths
-
-
-
 
 ## Note On Rules
 1. A particular letter (e.g. 'N') will only 'light up' (be colored green or yellow) as many times as it is in the word.
