@@ -74,17 +74,22 @@ function render(actions, effects = []) {
   )
   const effectsToRun = [...effects, paint, persist]
 
-  let effectWithCallback = effect => cb => { return(effect(oldGameState, newGameState), cb?.()) }
-  const effectsWithCallbacks = effectsToRun.map(f => effectWithCallback(f))
-  pipe(...effectsWithCallbacks)()
+  // let effectWithCallback = effect => cb => { return (effect(oldGameState, newGameState), cb?.()) }
+  // const effectsWithCallbacks = effectsToRun.map(f => effectWithCallback(f))
+  // pipe(...effectsWithCallbacks)(_=>_)
 
-  console.log({newGameState})
+  // console.log({newGameState})
+  ;(async () => {
+    for (let effect of effectsToRun) {
+      await effect(oldGameState, newGameState)
+    }
+  })()
 
   // the effect list takes the old state and the new state and an effect callback
   // I need to turn a list of effects in to effect1(o,n,effect2(o,n,effect3()))
   // I need to create a function that calls the last effect with the given state, then returns a function that does the same the next to last effect with the given state.
   // for each function I need to create a function that calls the current effect then calls the next effect 
-
+  // let p = n => effect(oldGameState, newGameState, n)
 
   // effectsToRun.forEach(effect => {
   //   let res = effect(oldGameState, newGameState, )
@@ -96,7 +101,6 @@ function render(actions, effects = []) {
   return State
 }
 
-
 // --------------------------------------------------------
 // ACTIONS:
 // --------------------------------------------------------
@@ -106,7 +110,7 @@ function add (val) {
     ({checked, gameBoard, pointer}) => {
       if(!checked[rowNum() -1] && isRowDone()) return
       gameBoard.length = 30
-      gameBoard[pointer] = {letter: val, state: 'guessed'}
+      gameBoard[pointer] = {letter: val, state: 'guessedLetter'}
       if(pointer < 30) pointer++;
       return {gameBoard, pointer}
     }
@@ -126,16 +130,16 @@ function backspace () {
 }
 
 function enter() {
-  return render(
-    ({checked, wordle,gameBoard}) => {
+  // return render(
+    // ({checked, wordle,gameBoard}) => {
+      const {checked, wordle,gameBoard} = State 
       const guess = guesses(gameBoard)[activeRow({checked})]
       if (!possibleWords.has(guess)) return badWord()
       if (guess == wordle) return won()
       if (activeRow() == 5) return lost()
-
       return check()
-    }
-  )
+    // }
+  // )
 }
 
 function check () {
@@ -180,6 +184,7 @@ function won () {
       winningRow = activeRow({checked})
       won = true;
       winHistory[winningRow]++;
+      pointer++
       gameHistory.push({wordle, gameBoard, won, checked})
       return {winHistory, won, gameHistory, pointer}
     }, [animateSumbittedRow, (oldGameState) => {
@@ -220,22 +225,24 @@ function newGame () {
 // EFFECTFUL:
 // --------------------------------------------------------
 
-function paint(oldGameState, newGameState) {
+async function paint(oldGameState, newGameState) {
   let tiles = getTiles()
   // if pointer is different. repaint
 
-  newGameState.gameBoard.forEach(({letter}, idx) => {
-    if (oldGameState.checked[rowNum(idx)] && activeRow(newGameState) > oldGameState.checked[rowNum(idx)]) return
+  console.log('paint',{newGameState})
+  newGameState.gameBoard.forEach(({letter, state}, idx) => {
+    //if (oldGameState.checked[rowNum(idx)] && activeRow(newGameState) > oldGameState.checked[rowNum(idx)]) return
     tiles[idx].innerText = letter ?? '';
-    style(tiles[idx], letter, idx, newGameState, oldGameState)
+    tiles[idx].classList = ''
+    tiles[idx].classList.add(state)
+    tiles[idx].style = {}
   })
 }
 
-function paintStats (_, {stats, winHistory}) {
+async function paintStats (_, {stats, winHistory}) {
   Object.entries(stats).forEach(([stat, value]) => {
     $(`#${stat}`).innerText = value
   })
-
   const mostCommonRow = winHistory.reduce((acc, cur) => cur > acc ? cur : acc, 0)
   
   const rowHeights = winHistory.map(row => {
@@ -251,13 +258,13 @@ function paintStats (_, {stats, winHistory}) {
 }
 
 
-function animateSumbittedRow (oldState, newState) {
+async function animateSumbittedRow (oldState, newState) {
   // console.log({oldrow: activeRow(oldState), newRow: activeRow(newState)})
   // console.log({oldState},{newState})
+  console.log('animateSumbittedRow')
   if(activeRow(oldState) == activeRow(newState) && !newState.won) return
   const sumbittedRow  = getRowEls(activeRow(oldState))
-  let done;
-  (() => new Promise((resolve, reject) => {
+  let done = await (new Promise((resolve, reject) => {
     sumbittedRow.forEach((tile, idx) => {
       tile.classList.remove('guessedLetter')
       const letter = tile?.innerText.toLowerCase() ?? ''
@@ -271,20 +278,17 @@ function animateSumbittedRow (oldState, newState) {
         duration: 600,
         delay: (idx *300) + 50,
         easing: 'ease-in-out',
-      })).onfinish = _ => {
-        setStylesOnElement(styles, tile)
-        setStylesOnElement(styles, $(`#${letter}`));
-        reject(!idx && newState.won)
+      })).onfinish = async _ => {
+        setStylesOnElement(styles,tile)
+        setStylesOnElement(styles, $('#'+ letter))
+        if(idx == 4) resolve(true)
+        if(!idx && newState.won) await animateWinningRow(null,State)
       }
     })
-  }).catch(showWinningAnimation => {
-      done = true
-      if (showWinningAnimation) animateWinningRow(null,State)
-    }))()
-  if (done) return
+  }))
 }
 
-function animateWinningRow (_,{gameState}) {
+async function animateWinningRow (_,{gameState}) {
   getRowEls(activeRow(gameState)).forEach((tile, idx) => {
     ;(tile.animate([
       {transform: 'translate(0,-8px)'},
@@ -334,7 +338,7 @@ function style (el, letter, idx, {checked, pointer, wordle, gameBoard, won}, old
 }
 
 
-function showGraph (_,{winHistory}) {
+async function showGraph (_,{winHistory}) {
   const gamesWon = winHistory.reduce((acc, cur) => acc+cur, 0)
   if(gamesWon == 0) return
   $('graph').style.display = 'flex'
@@ -342,7 +346,7 @@ function showGraph (_,{winHistory}) {
   $('no-history').style.display = 'none'
 }
 
-function persist(_,newGameState) {
+async function persist(_,newGameState) {
   if(!newGameState.persist) return
   localStorage.clear()
   localStorage.setItem('gameState', JSON.stringify(newGameState))
@@ -418,7 +422,6 @@ function closeStatsModal(e) {
     .onfinish = () => {
       $('stats-container').style.display = 'none'
   }
-
 }
 
 function share () {

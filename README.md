@@ -46,6 +46,10 @@ I intend for Wordle - Vanilla to become more fully featured than the original. H
 # To Do
 
 ## Bugs
+- [ ] Fix Pointer Bugs
+- [ ] Fix drop in styles Bugs
+- [ ] Fix Letters taking on last used styles 
+
 
 ## Improvements
 - [x] Refactor gameboard to include tile state
