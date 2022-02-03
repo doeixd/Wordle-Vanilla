@@ -48,9 +48,10 @@ I intend for Wordle - Vanilla to become more fully featured than the original. H
 ## Bugs
 
 ## Improvements
-- [ ] Refactor gameboard to include tile state
-- [ ] Refactor Rows to be zero based
+- [x] Refactor gameboard to include tile state
+- [x] Refactor Rows to be zero based
 - [ ] Refactor pointer logic 
+- [ ] Refactor styling logic
 
 ## Features
 - [ ] Instructions Modal

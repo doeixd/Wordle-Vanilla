@@ -240,7 +240,7 @@ function paintStats (_, {stats, winHistory}) {
   
   const rowHeights = winHistory.map(row => {
     const res = Math.floor((+row)/mostCommonRow * 100)
-    console.log({row}, {mostCommonRow}, (+row)/mostCommonRow)
+    // console.log({row}, {mostCommonRow}, (+row)/mostCommonRow)
     return res
   }) 
   const bars = [...$$('bar-text')]
@@ -257,7 +257,7 @@ function animateSumbittedRow (oldState, newState) {
   if(activeRow(oldState) == activeRow(newState) && !newState.won) return
   const sumbittedRow  = getRowEls(activeRow(oldState))
   let done;
-  new Promise((resolve, reject) => {
+  (() => new Promise((resolve, reject) => {
     sumbittedRow.forEach((tile, idx) => {
       tile.classList.remove('guessedLetter')
       const letter = tile?.innerText.toLowerCase() ?? ''
@@ -274,12 +274,13 @@ function animateSumbittedRow (oldState, newState) {
       })).onfinish = _ => {
         setStylesOnElement(styles, tile)
         setStylesOnElement(styles, $(`#${letter}`));
-        if (!idx && newState.won) animateWinningRow(_, State)
-        resolve()
+        reject(!idx && newState.won)
       }
     })
-  }).then(_ => done = true)
-
+  }).catch(showWinningAnimation => {
+      done = true
+      if (showWinningAnimation) animateWinningRow(null,State)
+    }))()
   if (done) return
 }
 
@@ -308,7 +309,10 @@ function animateWinningRow (_,{gameState}) {
 function style (el, letter, idx, {checked, pointer, wordle, gameBoard, won}, oldState) {
   el.classList.remove('guessedLetter')
 
-  if(rowNum(pointer -1) > rowNum(idx)) {
+  // if(rowNum(pointer -1) > rowNum(idx)) {
+  const curRow = rowNum(idx)  
+  // console.log(checked[curRow], oldState.checked[curRow], 'ROES CHE', )
+  if(checked[curRow] == oldState.checked[curRow] && oldState.checked[curRow]){
     const tiles = getTiles()
     const stylesMask = getRowValidityMask(rowNum(idx), {gameBoard, wordle})
     return stylesMask.forEach((style, letterIdx) => {
@@ -419,7 +423,7 @@ function closeStatsModal(e) {
 
 function share () {
   const share = getEmojiGameBoard()
-  console.log({share})
+  // console.log({share})
   navigator.clipboard.writeText(share)
   showToast('Copied to Clipboard', 2)
 }
@@ -489,6 +493,14 @@ function getTiles() {
   return tiles;
 }
 
+function pointer ({gameBoard} = State) {
+  return gameBoard.reduce((acc, cur, idx, arr) => {
+    if ((!cur?.letter && !acc) || idx==arr.length -1 ) return idx
+    return acc
+  }, 0)
+}
+
+
 function rowNum(point=State.pointer) {
   if(point<0) point = 0
   return Math.floor(point / 5);
@@ -553,12 +565,12 @@ function getColorScheme () {
 }
 
 function getEmojiGameBoard () {
-  console.log({State})
+  // console.log({State})
   return State.gameBoard.reduce((acc, cur, idx) => {
     console.log(idx + 1, (idx + 1) % 5)
     const newLine = ((idx+1) % 5 == 0) ? '\n' : '';
     const bgColor = getRowValidityMask(rowNum(idx),State)[idx % 5]
-    console.log({bgColor})
+    // console.log({bgColor})
     if(bgColor == 'rightSpot') return acc + '🟩' + newLine
     if(bgColor == 'wrongSpot') return acc + '🟨' + newLine
     return acc + '⬜' + newLine
