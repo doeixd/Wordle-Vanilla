@@ -58,6 +58,13 @@
   --winHistoryLabelColor: var(--gray-4);
 
   --keyboardButtonHoverBrightness: .95;
+
+  --barRank-0: #F0793A;
+  --barRank-1: #D98742;
+  --barRank-2: #C1934A;
+  --barRank-3: #A79C52;
+  --barRank-4: #89A45B;
+  --barRank-5: #63AB63;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -209,11 +216,6 @@ box {
   border: 2px solid var(--guessedBorderColor);
 }
 
-.rightSpot {
-  color: var(--submittedTextColor);
-  background-color: var(--rightSpotColor);
-  border-color: transparent;
-}
 
 .wrongLetter {
   color: var(--submittedTextColor);
@@ -227,6 +229,11 @@ box {
   border-color: transparent;
 }
 
+.rightSpot {
+  color: var(--submittedTextColor);
+  background-color: var(--rightSpotColor);
+  border-color: transparent;
+}
 @keyframes drop-in {
   from {
     transform: scale(1.25);
@@ -482,7 +489,12 @@ bar {
   width: 100%;
   color: var(--winHistoryBarTextColor);
   padding: 2px 0;
+}
 
+@keyframes grow {
+  from {
+    height: 0%
+  }
 }
 
 bar-text {

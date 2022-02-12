@@ -37,7 +37,7 @@ var State =
 
 
 let possibleWords;
-
+let tiles = getTiles()
 
 // --------------------------------------------------------
 // RUNTIME:
@@ -73,32 +73,14 @@ function render(actions, effects = []) {
     }, clone(State)
   )
   const effectsToRun = [...effects, paint, persist]
-
-  // let effectWithCallback = effect => cb => { return (effect(oldGameState, newGameState), cb?.()) }
-  // const effectsWithCallbacks = effectsToRun.map(f => effectWithCallback(f))
-  // pipe(...effectsWithCallbacks)(_=>_)
-
-  // console.log({newGameState})
+  State = newGameState
   ;(async () => {
     for (let effect of effectsToRun) {
       await effect(oldGameState, newGameState)
     }
   })()
-
-  // the effect list takes the old state and the new state and an effect callback
-  // I need to turn a list of effects in to effect1(o,n,effect2(o,n,effect3()))
-  // I need to create a function that calls the last effect with the given state, then returns a function that does the same the next to last effect with the given state.
-  // for each function I need to create a function that calls the current effect then calls the next effect 
-  // let p = n => effect(oldGameState, newGameState, n)
-
-  // effectsToRun.forEach(effect => {
-  //   let res = effect(oldGameState, newGameState, )
-  //   const callReturnedEffect = (arg = res) => typeof arg == 'function' ? arg(oldGameState, newGameState) : 'done'
-  //   callReturnedEffect?.(res)
-  // })
-
-  State = newGameState
-  return State
+  
+  return newGameState
 }
 
 // --------------------------------------------------------
@@ -142,19 +124,20 @@ function enter() {
   // )
 }
 
+function getCheckedGameboard (gameState) {
+  const row = activeRow(gameState)
+  const validityMask = getRowValidityMask(row, gameState)
+  validityMask.forEach((state, idx) => {
+    let tileIdx = idx + (row*5)
+    gameState.gameBoard[tileIdx].state = state
+  })
+  return gameState.gameBoard
+}
+
 function check () {
   return render (
     (gameState) => {
-      const row = activeRow(gameState)
-      console.log({row})
-      const validityMask = getRowValidityMask(activeRow(gameState),gameState)
-      console.log({validityMask})
-      validityMask.forEach((state, idx) => {
-        let tileIdx = idx + (activeRow()*5)
-        console.log(tileIdx)
-        gameState.gameBoard[tileIdx].state = state
-      })
-      console.log({gameState})
+      gameState.gameBoard = getCheckedGameboard(gameState)
       gameState.checked[activeRow()] = true;
       return gameState
     }, animateSumbittedRow
@@ -180,10 +163,11 @@ function won () {
   return render(
     (gameState) => {
       let {checked, winHistory, gameHistory, won, wordle, gameBoard, pointer} = gameState
+      gameState.gameBoard = getCheckedGameboard(gameState)
       checked[activeRow()] = true
-      winningRow = activeRow({checked})
+      winningRow = activeRow({checked}) -1
       won = true;
-      winHistory[winningRow]++;
+      winHistory[winningRow -1]++;
       pointer++
       gameHistory.push({wordle, gameBoard, won, checked})
       return {winHistory, won, gameHistory, pointer}
@@ -199,8 +183,9 @@ function lost() {
     (gameState) => {
       let{checked, wordle, gameHistory, gameBoard, won, pointer } = gameState
       checked[5] = true
+      gameBoard = getCheckedGameboard(gameState)
       gameHistory.push({wordle, gameBoard, won, checked, pointer})
-      return {checked, gameHistory}
+      return {checked, gameHistory, gameBoard}
     }, [animateSumbittedRow, ({wordle}) => showToast(wordle, 2.5, showStatsModal)]
   )
 }
@@ -226,16 +211,31 @@ function newGame () {
 // --------------------------------------------------------
 
 async function paint(oldGameState, newGameState) {
-  let tiles = getTiles()
-  // if pointer is different. repaint
 
-  console.log('paint',{newGameState})
   newGameState.gameBoard.forEach(({letter, state}, idx) => {
-    //if (oldGameState.checked[rowNum(idx)] && activeRow(newGameState) > oldGameState.checked[rowNum(idx)]) return
+    // If painting current tile, and that tile has not been backspaced in to
+    if (idx == newGameState.pointer && newGameState.pointer > oldGameState.pointer && newGameState.gameBoard[oldGameState.pointer].letter) tiles?.[newGameState.pointer -1]?.classList.add('drop-in')
+
+    if(letter) {
+      const letterEl = $('#' + letter)
+      letterEl.style = {}
+      
+      state == 'wrongLetter' && letterEl.classList.add('wrongLetter')
+      state == 'wrongSpot' && letterEl.classList.add('wrongSpot')
+      state == 'rightSpot' && letterEl.classList.add('rightSpot')
+    }
+
+    const {letter: oldLetter, state: oldState} = oldGameState.gameBoard[idx]
+    if (oldLetter == letter && state == oldState) return
     tiles[idx].innerText = letter ?? '';
     tiles[idx].classList = ''
     tiles[idx].classList.add(state)
     tiles[idx].style = {}
+    
+    if(newGameState.pointer == 0) $$('keyboard-row button')
+      .forEach(key => {
+        key.classList = ''
+      })
   })
 }
 
@@ -247,30 +247,28 @@ async function paintStats (_, {stats, winHistory}) {
   
   const rowHeights = winHistory.map(row => {
     const res = Math.floor((+row)/mostCommonRow * 100)
-    // console.log({row}, {mostCommonRow}, (+row)/mostCommonRow)
     return res
   }) 
+
   const bars = [...$$('bar-text')]
   bars.forEach((bar, idx) => {
     bar.innerText = winHistory[idx]
-    bar.parentElement.style.height = `${rowHeights[idx]}%`
+    ;(bar.parentElement.animate([{height: '0%'}, {height: `${rowHeights[idx]}%`, backgroundColor: `var(--barRank-${Math.round(rowHeights[idx]/20)})`}], {duration: 350, easing: 'ease-in-out', delay: (170 * idx) + 250}))
+      .onfinish = () => {
+        bar.parentElement.style.height = `${rowHeights[idx]}%`
+        bar.parentElement.style.backgroundColor = `var(--barRank-${Math.round(rowHeights[idx]/20)})`
+      }
   })
 }
 
 
 async function animateSumbittedRow (oldState, newState) {
-  // console.log({oldrow: activeRow(oldState), newRow: activeRow(newState)})
-  // console.log({oldState},{newState})
-  console.log('animateSumbittedRow')
   if(activeRow(oldState) == activeRow(newState) && !newState.won) return
   const sumbittedRow  = getRowEls(activeRow(oldState))
   let done = await (new Promise((resolve, reject) => {
     sumbittedRow.forEach((tile, idx) => {
       tile.classList.remove('guessedLetter')
-      const letter = tile?.innerText.toLowerCase() ?? ''
-      const guess = collect(getRowEls());
       const styles = getValidityStyles(activeRow(oldState),idx,oldState);
-      // console.log({styles})
       ;(tile.animate([
         {transform: 'rotate3d(50, 0, 0, -180deg)',...styles},
         {transform: 'rotate3d(0,0,0, 180deg)', ...styles}
@@ -280,7 +278,6 @@ async function animateSumbittedRow (oldState, newState) {
         easing: 'ease-in-out',
       })).onfinish = async _ => {
         setStylesOnElement(styles,tile)
-        setStylesOnElement(styles, $('#'+ letter))
         if(idx == 4) resolve(true)
         if(!idx && newState.won) await animateWinningRow(null,State)
       }
@@ -291,50 +288,18 @@ async function animateSumbittedRow (oldState, newState) {
 async function animateWinningRow (_,{gameState}) {
   getRowEls(activeRow(gameState)).forEach((tile, idx) => {
     ;(tile.animate([
-      {transform: 'translate(0,-8px)'},
+      {transform: 'translate(0,-10px)'},
       {transform: 'translate(0, -35px)'},
       {transform: 'translate(0, -25px)'},
-      {transform: 'translate(0, 8px)'},
-      {transform: 'translate(0,-9px)'},
+      {transform: 'translate(0, 7px)'},
+      {transform: 'translate(0,-8px)'},
       {transform: 'translate(0,0px)'}
     ],{
       duration: 450,
       delay: (idx * 100) + 650,
       easing: 'ease-out',
-      // HACK: Increasing the pointer will force the style function to paint the winning row. 
-      // Because the style function applies permanant styles to the row before the active row.
-      // This cant be done in the win function because the row will be painted before the aimation.
     }))
-    .onfinish = () => State.pointer++
   })
-}
-
-
-function style (el, letter, idx, {checked, pointer, wordle, gameBoard, won}, oldState) {
-  el.classList.remove('guessedLetter')
-
-  // if(rowNum(pointer -1) > rowNum(idx)) {
-  const curRow = rowNum(idx)  
-  // console.log(checked[curRow], oldState.checked[curRow], 'ROES CHE', )
-  if(checked[curRow] == oldState.checked[curRow] && oldState.checked[curRow]){
-    const tiles = getTiles()
-    const stylesMask = getRowValidityMask(rowNum(idx), {gameBoard, wordle})
-    return stylesMask.forEach((style, letterIdx) => {
-      tiles[((letterIdx) + (rowNum(idx)) * 5)].classList.add(style)
-    })
-  }
-
-  const isActiveRow  = rowNum(idx) == activeRow()
-  if(isActiveRow){
-    el.innerText 
-      ? el.classList.add('guessedLetter')
-      : el.classList.remove('guessedLetter')
-  }
-
-  if(idx === pointer) el.classList.remove('drop-in')
-  if(idx === pointer -1) el.classList.add('drop-in')
-
-  el.setAttribute('style', '')
 }
 
 
@@ -382,10 +347,6 @@ function showToast(msg, time = 1, cb = () => {}) {
   }, time * 1000)
 }
 
-// HACK: looping through the row twice to calulate the styles for each letter isnt ideal. 
-// Ideally I should change the base datastrucure and add correctness state to 
-// gameBoard/gameBoardCorrectnessStateMask. That way I don't have to derive it each time. 
-// I'll do that later.
 function getValidityStyles(rowNum = activeRow(), idx, gameState = State) {
   const stylesMask = getRowValidityMask(rowNum, gameState)
   return stylesMask.map((style, idx) => {
@@ -409,6 +370,7 @@ function showStatsModal () {
   $('h1').classList.add('blur')
   $('#game').classList.add('blur')
   $('#game').setAttribute('aria-hidden', 'true')
+
 }
 
 function closeStatsModal(e) {
@@ -426,13 +388,13 @@ function closeStatsModal(e) {
 
 function share () {
   const share = getEmojiGameBoard()
-  // console.log({share})
   navigator.clipboard.writeText(share)
   showToast('Copied to Clipboard', 2)
 }
 
 function getRowValidityMask (rowNumber = activeRow(), {gameBoard, wordle}) {
-  const guess = guesses(gameBoard)[rowNumber]
+  let guess = guesses(gameBoard)
+  guess = guess[rowNumber]
   let foil = wordle
   return guess.split('')      
   .map((letter, idx) => {
@@ -486,8 +448,6 @@ function cssVar(cssVar) {
   return getComputedStyle(document.body).getPropertyValue(`--${cssVar}`)
 }
 
-// TODO: I should change all refrences to rows to be zero based. There is way too much adding/subtracting 1 going on.
-
 function getTiles() {
   const tiles = []
   for (let i = 0; i < 6; i++) {
@@ -503,14 +463,13 @@ function pointer ({gameBoard} = State) {
   }, 0)
 }
 
-
 function rowNum(point=State.pointer) {
   if(point<0) point = 0
   return Math.floor(point / 5);
 }
 
 function activeRow({checked}=State) {
-  return checked.filter(i => i).length
+  return Math.min(checked.filter(i => i).length, 5)
 }
 
 function isRowDone({checked, pointer} = State) {
@@ -551,7 +510,7 @@ function generateWinningMessage(winningRow) {
   
     return (winningRow == 0 )
       ? randomIdx(firstLinePraises)
-      : (winningRow == 6) 
+      : (winningRow == 5) 
         ? randomIdx(lastLinePraises)
         : randomIdx(generalPraises)
 }
@@ -568,12 +527,9 @@ function getColorScheme () {
 }
 
 function getEmojiGameBoard () {
-  // console.log({State})
   return State.gameBoard.reduce((acc, cur, idx) => {
-    console.log(idx + 1, (idx + 1) % 5)
     const newLine = ((idx+1) % 5 == 0) ? '\n' : '';
     const bgColor = getRowValidityMask(rowNum(idx),State)[idx % 5]
-    // console.log({bgColor})
     if(bgColor == 'rightSpot') return acc + '🟩' + newLine
     if(bgColor == 'wrongSpot') return acc + '🟨' + newLine
     return acc + '⬜' + newLine
