@@ -245,12 +245,12 @@ async function paintStats (_, {stats, winHistory}) {
   }) 
 
   const bars = [...$$('bar-text')]
-  bars.forEach((bar, idx) => {
-    bar.innerText = winHistory[idx]
-    ;(bar.parentElement.animate([{height: '0%'}, {height: `${rowHeights[idx]}%`, backgroundColor: `var(--barRank-${Math.round(rowHeights[idx]/20)})`}], {duration: 350, easing: 'ease-in-out', delay: (170 * idx) + 250}))
+  bars?.forEach((bar, idx) => {
+    bar?.innerText = winHistory[idx]
+    ;(bar?.parentElement.animate([{height: '0%'}, {height: `${rowHeights[idx]}%`, backgroundColor: `var(--barRank-${Math.round(rowHeights[idx]/20)})`}], {duration: 350, easing: 'ease-in-out', delay: (170 * idx) + 250}))
       .onfinish = () => {
-        bar.parentElement.style.height = `${rowHeights[idx]}%`
-        bar.parentElement.style.backgroundColor = `var(--barRank-${Math.round(rowHeights[idx]/20)})`
+        bar?.parentElement?.style?.height = `${rowHeights[idx]}%`
+        bar?.parentElement?.style?.backgroundColor = `var(--barRank-${Math.round(rowHeights[idx]/20)})`
       }
   })
 }
