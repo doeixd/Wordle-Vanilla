@@ -42,6 +42,7 @@
   --headerBorderColor: var(--gray-2);
 
   --statsIconColor: var(--gray-4);
+  --statsIconHoverColor: var(--gray-1);
 
   --keyBG: #d3d6da;
   --borderColor: lightgrey;
@@ -81,6 +82,8 @@
 
     --headerBorderColor: var(--gray-10);
     --statsIconColor: var(--gray-9);
+    --statsIconHoverColor: var(--gray-11);
+
     --closeIconColor: var(--gray-10);
     --closeIconHoverColor: var(--gray-11);
 
@@ -142,6 +145,14 @@ h1 {
   right: 12%;
   top: 28px;
   cursor: pointer;
+  padding: 5px;
+  border-radius: 100%;
+  box-sizing: content-box;
+  transition: .2s all;
+}
+
+#stats-icon:hover {
+  background-color: var(--statsIconHoverColor);
 }
 
 #game {
