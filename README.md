@@ -4,7 +4,7 @@
 <br />**[Edit On StackBlitz ⚡️](stackblitz.com/edit/web-platform-q3ltjq)**
 
 ## Purpose
-I created this as an educational exercise, and as a project to add to my portfolio.
+I created this as an educational exercise, all rights to Wordle belong to it's respective owner
 
 ## Features
 This wordle clone does not attempt to be a 100% accurate clone, but here are features currently supported
