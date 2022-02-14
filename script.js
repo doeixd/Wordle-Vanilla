@@ -4,7 +4,7 @@ const possibleWordsWorker = setup();
 // GAME STATE:
 // --------------------------------------------------------
 
-const localStorageGameState = () => localStorage.getItem('gameState');
+const localStorageGameState = () => JSON.parse(localStorage.getItem('gameState'));
 
 const defaultGameState = {
   wordle: null,
