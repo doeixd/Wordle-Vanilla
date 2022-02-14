@@ -242,22 +242,21 @@ async function paintStats (_, {stats, winHistory}) {
   const rowHeights = winHistory.map(row => {
     const res = Math.floor((+row)/mostCommonRow * 100)
     return res
-  }) 
+  }) || 0
 
   const bars = [...$$('bar-text')]
   bars?.forEach((bar, idx) => {
-    bar?.innerText = winHistory[idx]
+    bar.innerText = winHistory[idx]
     ;(bar?.parentElement.animate([{height: '0%'}, {height: `${rowHeights[idx]}%`, backgroundColor: `var(--barRank-${Math.round(rowHeights[idx]/20)})`}], {duration: 350, easing: 'ease-in-out', delay: (170 * idx) + 250}))
       .onfinish = () => {
-        bar?.parentElement?.style?.height = `${rowHeights[idx]}%`
-        bar?.parentElement?.style?.backgroundColor = `var(--barRank-${Math.round(rowHeights[idx]/20)})`
+        bar.parentElement.style.height = `${rowHeights[idx]}%`
+        bar.parentElement.style.backgroundColor = `var(--barRank-${Math.round(rowHeights[idx]/20)})`
       }
   })
 }
 
 
 async function animateSumbittedRow (oldState, newState) {
-  console.log({oldState},{newState})
   if(activeRow(oldState) == activeRow(newState) && !newState.won) return
   const sumbittedRow  = getRowEls(activeRow(oldState))
   let done = await (new Promise((resolve, reject) => {
@@ -464,8 +463,7 @@ function rowNum(point=State.pointer) {
 }
 
 function activeRow({checked}=State) {
-  let row = checked.filter(i => i).length 
-  return row == 6 ? Infinity : row
+  return checked.filter(i => i).length 
 }
 
 function isRowDone({checked, pointer} = State) {
