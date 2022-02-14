@@ -1,485 +1,531 @@
-const possibleWordsWorker = setup()
-
+const possibleWordsWorker = setup();
 
 // --------------------------------------------------------
-// GAME STATE: 
+// GAME STATE:
 // --------------------------------------------------------
 
-const localStorageGameState = () => localStorage.getItem('gameState')
+const localStorageGameState = () => localStorage.getItem('gameState');
 
 const defaultGameState = {
   wordle: null,
-  gameBoard:  [...Array(30).keys()].map((i) => ({letter: null, state: null})),
+  gameBoard: [...Array(30).keys()].map((i) => ({ letter: null, state: null })),
   pointer: 0,
-  checked: [null,null,null,null,null,null],
+  checked: [null, null, null, null, null, null],
   won: false,
-}
+};
 
 const defaultUserState = {
   colorScheme: null,
-  winHistory: [null,null,null,null,null,null],
+  winHistory: [null, null, null, null, null, null],
   persist: true,
   gameHistory: [],
   stats: {
     gamesPlayed: 0,
     winPercent: 0,
     currentStreak: 0,
-    maxStreak: 0    
-  }
-}
+    maxStreak: 0,
+  },
+};
 
-var State = 
-  localStorageGameState()?.persist 
-    ? localStorageGameState
-    : { ...defaultGameState, ...defaultUserState }
-
+var State = localStorageGameState()?.persist
+  ? localStorageGameState
+  : { ...defaultGameState, ...defaultUserState };
 
 let possibleWords;
-let tiles = getTiles()
+let tiles = getTiles();
 
 // --------------------------------------------------------
 // RUNTIME:
 // --------------------------------------------------------
 
-document.addEventListener('keydown', (e, {won} = State) => {
-  if (won || activeRow() == 6 || $('stats-container').getAttribute('aria-hidden') == 'false') return
+document.addEventListener('keydown', (e, { won } = State) => {
+  if (
+    won ||
+    activeRow() == 6 ||
+    $('stats-container').getAttribute('aria-hidden') == 'false'
+  )
+    return;
   if (e.key == 'Backspace') backspace();
   if (e.key == 'Enter' && isRowDone()) return enter();
   if (e.key.match(/^[a-z]|[A-Z]$/)) add(e.key.toLowerCase());
 });
 
-$$('keyboard-row button').forEach(button => {
-  button.addEventListener('click', (e)=> {
+$$('keyboard-row button').forEach((button) => {
+  button.addEventListener('click', (e) => {
     let key;
-    key = e.currentTarget?.innerText?.toLowerCase() ?? ''
-    if(e.currentTarget.id == 'backspace') key = 'Backspace'
-    if(e.currentTarget.id == 'enter') key = 'Enter'
+    key = e.currentTarget?.innerText?.toLowerCase() ?? '';
+    if (e.currentTarget.id == 'backspace') key = 'Backspace';
+    if (e.currentTarget.id == 'enter') key = 'Enter';
 
-    document.dispatchEvent(new KeyboardEvent('keydown', {key}))
-    e.currentTarget.blur()
-  })
-})
+    document.dispatchEvent(new KeyboardEvent('keydown', { key }));
+    e.currentTarget.blur();
+  });
+});
 
 function render(actions, effects = []) {
-  actions = [actions].flat()
-  effects = [effects].flat()
-  const oldGameState = clone(State)
+  actions = [actions].flat();
+  effects = [effects].flat();
+  const oldGameState = clone(State);
 
-  const newGameState = actions.length && actions.reduce(
-    (acc,cur) => {
-      return Object.assign(clone(oldGameState), cur(clone(acc)))
-    }, clone(State)
-  )
-  const effectsToRun = [...effects, paint, persist]
-  State = newGameState
-  ;(async () => {
+  const newGameState =
+    actions.length &&
+    actions.reduce((acc, cur) => {
+      return Object.assign(clone(oldGameState), cur(clone(acc)));
+    }, clone(State));
+  const effectsToRun = [...effects, paint, persist];
+  State = newGameState;
+  (async () => {
     for (let effect of effectsToRun) {
-      await effect(oldGameState, newGameState)
+      await effect(oldGameState, newGameState);
     }
-  })()
-  
-  return newGameState
+  })();
+
+  return newGameState;
 }
 
 // --------------------------------------------------------
 // ACTIONS:
 // --------------------------------------------------------
 
-function add (val) {
-  return render(
-    ({checked, gameBoard, pointer}) => {
-      if(!checked[rowNum() -1] && isRowDone()) return
-      gameBoard.length = 30
-      gameBoard[pointer] = {letter: val, state: 'guessedLetter'}
-      if(pointer < 30) pointer++;
-      return {gameBoard, pointer}
-    }
-  )
+function add(val) {
+  return render(({ checked, gameBoard, pointer }) => {
+    if (!checked[rowNum() - 1] && isRowDone()) return;
+    gameBoard.length = 30;
+    gameBoard[pointer] = { letter: val, state: 'guessedLetter' };
+    if (pointer < 30) pointer++;
+    return { gameBoard, pointer };
+  });
 }
 
-function backspace () {
-  return render(
-    ({pointer, gameBoard, checked}) => {
-      if(pointer == 0) return
-      if(checked[rowNum(pointer-1)]) return
-      pointer--
-      gameBoard[pointer] = {letter: null, state: null}
-      return {pointer, gameBoard}
-    }
-  )
+function backspace() {
+  return render(({ pointer, gameBoard, checked }) => {
+    if (pointer == 0) return;
+    if (checked[rowNum(pointer - 1)]) return;
+    pointer--;
+    gameBoard[pointer] = { letter: null, state: null };
+    return { pointer, gameBoard };
+  });
 }
 
 function enter() {
-      const {checked, wordle,gameBoard} = State 
-      const guess = guesses(gameBoard)[activeRow({checked})]
-      if (!possibleWords.has(guess)) return badWord()
-      if (guess == wordle) return won()
-      if (activeRow() == 5) return lost()
-      return check()
+  const { checked, wordle, gameBoard } = State;
+  const guess = guesses(gameBoard)[activeRow({ checked })];
+  if (!possibleWords.has(guess)) return badWord();
+  if (guess == wordle) return won();
+  if (activeRow() == 5) return lost();
+  return check();
 }
 
-function getCheckedGameboard (gameState) {
-  const row = Math.min(activeRow(gameState), 5)
-  const validityMask = getRowValidityMask(row, gameState)
+function getCheckedGameboard(gameState) {
+  const row = Math.min(activeRow(gameState), 5);
+  const validityMask = getRowValidityMask(row, gameState);
   validityMask.forEach((state, idx) => {
-    let tileIdx = idx + (row*5)
-    gameState.gameBoard[tileIdx].state = state
-  })
-  return gameState.gameBoard
+    let tileIdx = idx + row * 5;
+    gameState.gameBoard[tileIdx].state = state;
+  });
+  return gameState.gameBoard;
 }
 
-function check () {
-  return render (
-    (gameState) => {
-      gameState.gameBoard = getCheckedGameboard(gameState)
-      gameState.checked[activeRow()] = true;
-      return gameState
-    }, animateSumbittedRow
-  )
+function check() {
+  return render((gameState) => {
+    gameState.gameBoard = getCheckedGameboard(gameState);
+    gameState.checked[activeRow()] = true;
+    return gameState;
+  }, animateSumbittedRow);
 }
 
 function setStats() {
   return render(
-    ({stats, checked, winHistory, gameHistory}) => {
-      stats.gamesPlayed = gameHistory.length
-      stats.winPercent = Math.round((winHistory.reduce((acc, cur) => acc+cur,0) / stats.gamesPlayed) || 0 ) * 100
+    ({ stats, checked, winHistory, gameHistory }) => {
+      stats.gamesPlayed = gameHistory.length;
+      stats.winPercent =
+        Math.round(
+          winHistory.reduce((acc, cur) => acc + cur, 0) / stats.gamesPlayed || 0
+        ) * 100;
       stats.currentStreak = gameHistory.reduce((acc, cur) => {
-        return !cur.won && acc > 0 ? acc : acc+1
-      },0)
-      if (stats.currentStreak > stats.maxStreak) stats.maxStreak = stats.currentStreak
-      return { stats }
-    }, [paintStats, showGraph]
-  )
+        return !cur.won && acc > 0 ? acc : acc + 1;
+      }, 0);
+      if (stats.currentStreak > stats.maxStreak)
+        stats.maxStreak = stats.currentStreak;
+      return { stats };
+    },
+    [paintStats, showGraph]
+  );
 }
 
-function won () {
+function won() {
   var winningRow;
   return render(
     (gameState) => {
-      let {checked, winHistory, gameHistory, won, wordle, gameBoard, pointer} = gameState
-      gameState.gameBoard = getCheckedGameboard(gameState)
-      checked[activeRow()] = true
-      winningRow = activeRow({checked}) -1
+      let {
+        checked,
+        winHistory,
+        gameHistory,
+        won,
+        wordle,
+        gameBoard,
+        pointer,
+      } = gameState;
+      gameState.gameBoard = getCheckedGameboard(gameState);
+      checked[activeRow()] = true;
+      winningRow = activeRow({ checked }) - 1;
       won = true;
-      winHistory[winningRow -1]++;
-      pointer++
-      gameHistory.push({wordle, gameBoard, won, checked})
-      return {winHistory, won, gameHistory, pointer}
-    }, [animateSumbittedRow, (oldGameState) => {
-      const randomPriaise = generateWinningMessage(winningRow)
-      showToast(randomPriaise, 2.5,showStatsModal) 
-    }]
-  )
+      winHistory[winningRow - 1]++;
+      pointer++;
+      gameHistory.push({ wordle, gameBoard, won, checked });
+      return { winHistory, won, gameHistory, pointer };
+    },
+    [
+      animateSumbittedRow,
+      (oldGameState) => {
+        const randomPriaise = generateWinningMessage(winningRow);
+        showToast(randomPriaise, 2.5, showStatsModal);
+      },
+    ]
+  );
 }
 
 function lost() {
   return render(
     (gameState) => {
-      let{checked, wordle, gameHistory, gameBoard, won, pointer } = gameState
-      checked[5] = true
-      gameBoard = getCheckedGameboard(gameState)
-      gameHistory.push({wordle, gameBoard, won, checked, pointer})
-      return {checked, gameHistory, gameBoard}
-    }, [animateSumbittedRow, ({wordle}) => showToast(wordle, 2.5, showStatsModal)]
-  )
+      let { checked, wordle, gameHistory, gameBoard, won, pointer } = gameState;
+      checked[5] = true;
+      gameBoard = getCheckedGameboard(gameState);
+      gameHistory.push({ wordle, gameBoard, won, checked, pointer });
+      return { checked, gameHistory, gameBoard };
+    },
+    [
+      animateSumbittedRow,
+      ({ wordle }) => showToast(wordle, 2.5, showStatsModal),
+    ]
+  );
 }
 
-function newGame () {
+function newGame() {
   return render(
-    ({wordle}) => {
-      wordle = possibleWordsWorker.postMessage('newWordle')
-      closeStatsModal()
+    ({ wordle }) => {
+      wordle = possibleWordsWorker.postMessage('newWordle');
+      closeStatsModal();
       return {
         ...defaultGameState,
-        wordle: wordle
-      }
-    }, [() => {
-        [...$$('keyboard-row button')].forEach(key => key.setAttribute('style',''))
-    }, ]
-  )
+        wordle: wordle,
+      };
+    },
+    [
+      () => {
+        [...$$('keyboard-row button')].forEach((key) =>
+          key.setAttribute('style', '')
+        );
+      },
+    ]
+  );
 }
-
 
 // --------------------------------------------------------
 // EFFECTFUL:
 // --------------------------------------------------------
 
 async function paint(oldGameState, newGameState) {
+  newGameState.gameBoard.forEach(({ letter, state }, idx) => {
+    if (letter) {
+      const letterEl = $('#' + letter);
+      letterEl.style = {};
 
-  newGameState.gameBoard.forEach(({letter, state}, idx) => {
-
-    if(letter) {
-      const letterEl = $('#' + letter)
-      letterEl.style = {}
-      
-      state == 'wrongLetter' && letterEl.classList.add('wrongLetter')
-      state == 'wrongSpot' && letterEl.classList.add('wrongSpot')
-      state == 'rightSpot' && letterEl.classList.add('rightSpot')
+      state == 'wrongLetter' && letterEl.classList.add('wrongLetter');
+      state == 'wrongSpot' && letterEl.classList.add('wrongSpot');
+      state == 'rightSpot' && letterEl.classList.add('rightSpot');
     }
 
-    const {letter: oldLetter, state: oldState} = oldGameState.gameBoard[idx]
-    if (oldLetter == letter && state == oldState) return
+    const { letter: oldLetter, state: oldState } = oldGameState.gameBoard[idx];
+    if (oldLetter == letter && state == oldState) return;
     tiles[idx].innerText = letter ?? '';
-    tiles[idx].classList = ''
-    tiles[idx].classList.add(state)
-    tiles[idx].style = {}
-    
-    if(newGameState.pointer == 0) $$('keyboard-row button')
-      .forEach(key => {
-        key.classList = ''
-      })
-  })
+    tiles[idx].classList = '';
+    tiles[idx].classList.add(state);
+    tiles[idx].style = {};
+
+    if (newGameState.pointer == 0)
+      $$('keyboard-row button').forEach((key) => {
+        key.classList = '';
+      });
+  });
 }
 
-async function paintStats (_, {stats, winHistory}) {
+async function paintStats(_, { stats, winHistory }) {
   Object.entries(stats).forEach(([stat, value]) => {
-    $(`#${stat}`).innerText = value
-  })
-  const mostCommonRow = winHistory.reduce((acc, cur) => cur > acc ? cur : acc, 0)
-  
-  const rowHeights = winHistory.map(row => {
-    const res = Math.floor((+row)/mostCommonRow * 100)
-    return res
-  }) || 0
+    $(`#${stat}`).innerText = value;
+  });
+  const mostCommonRow = winHistory.reduce(
+    (acc, cur) => (cur > acc ? cur : acc),
+    0
+  );
 
-  const bars = [...$$('bar-text')]
+  const rowHeights =
+    winHistory.map((row) => {
+      const res = Math.floor((+row / mostCommonRow) * 100);
+      return res;
+    }) || 0;
+
+  const bars = [...$$('bar-text')];
   bars?.forEach((bar, idx) => {
-    bar.innerText = winHistory[idx]
-    ;(bar?.parentElement.animate([{height: '0%'}, {height: `${rowHeights[idx]}%`, backgroundColor: `var(--barRank-${Math.round(rowHeights[idx]/20)})`}], {duration: 350, easing: 'ease-in-out', delay: (170 * idx) + 250}))
-      .onfinish = () => {
-        bar.parentElement.style.height = `${rowHeights?.[idx] ?? 0}%`
-        bar.parentElement.style.backgroundColor = `var(--barRank-${Math.round(rowHeights[idx]/20)})`
-      }
-  })
+    bar.innerText = winHistory[idx];
+    (bar?.parentElement.animate(
+      [
+        { height: '0%' },
+        {
+          height: `${rowHeights[idx]}%`,
+          backgroundColor: `var(--barRank-${Math.round(rowHeights[idx] / 20)})`,
+        },
+      ],
+      { duration: 350, easing: 'ease-in-out', delay: 170 * idx + 250 }
+    )).onfinish = () => {
+      bar.parentElement.style.height = `${rowHeights?.[idx] ?? 0}%`;
+      bar.parentElement.style.backgroundColor = `var(--barRank-${Math.round(
+        rowHeights[idx] / 20
+      )})`;
+    };
+  });
 }
 
-
-async function animateSumbittedRow (oldState, newState) {
-  if(activeRow(oldState) == activeRow(newState) && !newState.won) return
-  const sumbittedRow  = getRowEls(activeRow(oldState))
-  let done = await (new Promise((resolve, reject) => {
+async function animateSumbittedRow(oldState, newState) {
+  if (activeRow(oldState) == activeRow(newState) && !newState.won) return;
+  const sumbittedRow = getRowEls(activeRow(oldState));
+  let done = await new Promise((resolve, reject) => {
     sumbittedRow.forEach((tile, idx) => {
-      tile.classList.remove('guessedLetter')
-      const styles = getValidityStyles(activeRow(oldState),idx,oldState);
-      ;(tile.animate([
-        {transform: 'rotate3d(50, 0, 0, -180deg)',...styles},
-        {transform: 'rotate3d(0,0,0, 180deg)', ...styles}
-      ],{
-        duration: 600,
-        delay: (idx *300) + 50,
-        easing: 'ease-in-out',
-      })).onfinish = async _ => {
-        setStylesOnElement(styles,tile)
-        if(idx == 4) resolve(true)
-        if(!idx && newState.won) await animateWinningRow(null,State)
-      }
-    })
-  }))
+      tile.classList.remove('guessedLetter');
+      const styles = getValidityStyles(activeRow(oldState), idx, oldState);
+      tile.animate(
+        [
+          { transform: 'rotate3d(50, 0, 0, -180deg)', ...styles },
+          { transform: 'rotate3d(0,0,0, 180deg)', ...styles },
+        ],
+        {
+          duration: 600,
+          delay: idx * 300 + 50,
+          easing: 'ease-in-out',
+        }
+      ).onfinish = async (_) => {
+        setStylesOnElement(styles, tile);
+        if (idx == 4) resolve(true);
+        if (!idx && newState.won) await animateWinningRow(null, State);
+      };
+    });
+  });
 }
 
-async function animateWinningRow (_,{gameState}) {
+async function animateWinningRow(_, { gameState }) {
   getRowEls(activeRow(gameState)).forEach((tile, idx) => {
-    ;(tile.animate([
-      {transform: 'translate(0,-10px)'},
-      {transform: 'translate(0, -35px)'},
-      {transform: 'translate(0, -25px)'},
-      {transform: 'translate(0, 7px)'},
-      {transform: 'translate(0,-8px)'},
-      {transform: 'translate(0,0px)'}
-    ],{
-      duration: 450,
-      delay: (idx * 100) + 650,
-      easing: 'ease-out',
-    }))
-  })
+    tile.animate(
+      [
+        { transform: 'translate(0,-10px)' },
+        { transform: 'translate(0, -35px)' },
+        { transform: 'translate(0, -25px)' },
+        { transform: 'translate(0, 7px)' },
+        { transform: 'translate(0,-8px)' },
+        { transform: 'translate(0,0px)' },
+      ],
+      {
+        duration: 450,
+        delay: idx * 100 + 650,
+        easing: 'ease-out',
+      }
+    );
+  });
 }
 
-
-async function showGraph (_,{winHistory}) {
-  const gamesWon = winHistory.reduce((acc, cur) => acc+cur, 0)
-  if(gamesWon == 0) return
-  $('graph').style.display = 'flex'
-  $('stats h3').style.display = 'block'
-  $('no-history').style.display = 'none'
+async function showGraph(_, { winHistory }) {
+  const gamesWon = winHistory.reduce((acc, cur) => acc + cur, 0);
+  if (gamesWon == 0) return;
+  $('graph').style.display = 'flex';
+  $('stats h3').style.display = 'block';
+  $('no-history').style.display = 'none';
 }
 
-async function persist(_,newGameState) {
-  if(!newGameState.persist) return
-  localStorage.clear()
-  localStorage.setItem('gameState', JSON.stringify(newGameState))
+async function persist(_, newGameState) {
+  if (!newGameState.persist) return;
+  localStorage.clear();
+  localStorage.setItem('gameState', JSON.stringify(newGameState));
 }
 
 function badWord() {
-  showToast('Not In Word List')
-  const row = getRowEls(activeRow(),false)
-  row.animate([
-    {transform: 'translate(10px)'},
-    {transform: 'translate(-10px)'},     
-    {transform: 'translate(5px)'},
-    {transform: 'translate(-5px)'},
-    {transform: 'translate(2px)'},
-  ], {
-    duration: 250,
-    easing: 'ease-out'
-  } )
+  showToast('Not In Word List');
+  const row = getRowEls(activeRow(), false);
+  row.animate(
+    [
+      { transform: 'translate(10px)' },
+      { transform: 'translate(-10px)' },
+      { transform: 'translate(5px)' },
+      { transform: 'translate(-5px)' },
+      { transform: 'translate(2px)' },
+    ],
+    {
+      duration: 250,
+      easing: 'ease-out',
+    }
+  );
 }
 
 function showToast(msg, time = 1, cb = () => {}) {
-  const toastContainer = $('toast-container')
-  
-  const toastTemplate = html(`<toast>${msg.toUpperCase()}</toast>`)
-  toastContainer.prepend(toastTemplate)
-  const toast = toastContainer.firstChild
+  const toastContainer = $('toast-container');
+
+  const toastTemplate = html(`<toast>${msg.toUpperCase()}</toast>`);
+  toastContainer.prepend(toastTemplate);
+  const toast = toastContainer.firstChild;
 
   setTimeout(function () {
-    toast.animate([{opacity: '1'},{opacity: '0'}], 400).onfinish = () => {
-      toastContainer.removeChild(toast)
-    }
-    cb()
-  }, time * 1000)
+    toast.animate([{ opacity: '1' }, { opacity: '0' }], 400).onfinish = () => {
+      toastContainer.removeChild(toast);
+    };
+    cb();
+  }, time * 1000);
 }
 
 function getValidityStyles(rowNum = activeRow(), idx, gameState = State) {
-  const stylesMask = getRowValidityMask(rowNum, gameState)
+  const stylesMask = getRowValidityMask(rowNum, gameState);
   return stylesMask.map((style, idx) => {
-    const styles = {borderColor: 'transparent', color: `var(--submittedTextColor)`, backgroundColor: 'var(--wrongLetterColor'}
-    if(style == 'rightSpot') styles.backgroundColor = 'var(--rightSpotColor)'
-    if(style == 'wrongSpot') styles.backgroundColor = 'var(--wrongSpotColor)'
-    return styles
-  })[idx]
+    const styles = {
+      borderColor: 'transparent',
+      color: `var(--submittedTextColor)`,
+      backgroundColor: 'var(--wrongLetterColor',
+    };
+    if (style == 'rightSpot') styles.backgroundColor = 'var(--rightSpotColor)';
+    if (style == 'wrongSpot') styles.backgroundColor = 'var(--wrongSpotColor)';
+    return styles;
+  })[idx];
 }
 
-function setStylesOnElement (styles, element) {
+function setStylesOnElement(styles, element) {
   Object.assign(element.style, styles);
 }
 
-function showStatsModal () {
-  setStats()
-  $('stats-container').style.display = 'flex'
-  $('stats-container').setAttribute('aria-hidden', 'false')
-  $('stats').classList = ''
-  $('stats').classList.add('enter')
-  $('h1').classList.add('blur')
-  $('#game').classList.add('blur')
-  $('#game').setAttribute('aria-hidden', 'true')
-
+function showStatsModal() {
+  setStats();
+  $('stats-container').style.display = 'flex';
+  $('stats-container').setAttribute('aria-hidden', 'false');
+  $('stats').classList = '';
+  $('stats').classList.add('enter');
+  $('h1').classList.add('blur');
+  $('#game').classList.add('blur');
+  $('#game').setAttribute('aria-hidden', 'true');
 }
 
 function closeStatsModal(e) {
-  $('h1').classList.remove('blur')
-  $('#game').classList.remove('blur')
-  $('#game').setAttribute('aria-hidden', 'false')
-  $('stats-container').setAttribute('aria-hidden', 'true')
-  $('stats').classList = ''
-  $('stats')
-  .animate({transform: 'translate(0, -200px)', opacity: 0}, {duration: 200, easing: 'ease-in-out'})
-    .onfinish = () => {
-      $('stats-container').style.display = 'none'
-  }
+  $('h1').classList.remove('blur');
+  $('#game').classList.remove('blur');
+  $('#game').setAttribute('aria-hidden', 'false');
+  $('stats-container').setAttribute('aria-hidden', 'true');
+  $('stats').classList = '';
+  $('stats').animate(
+    { transform: 'translate(0, -200px)', opacity: 0 },
+    { duration: 200, easing: 'ease-in-out' }
+  ).onfinish = () => {
+    $('stats-container').style.display = 'none';
+  };
 }
 
-function share () {
-  const share = getEmojiGameBoard()
-  navigator.clipboard.writeText(share)
-  showToast('Copied to Clipboard', 2)
+function share() {
+  const share = getEmojiGameBoard();
+  navigator.clipboard.writeText(share);
+  showToast('Copied to Clipboard', 2);
 }
 
-function getRowValidityMask (rowNumber = activeRow(), {gameBoard, wordle}) {
-  let guess = guesses(gameBoard)
-  guess = guess[rowNumber]
-  let foil = wordle
-  return guess.split('')      
-  .map((letter, idx) => {
-    if(wordle[idx] == letter) {
-      foil = replaceAt(foil, idx)
-      return 'rightSpot'
-     }
-    return letter
-  })
-  .map((letter, idx) => {
-    if(foil.match(guess[idx]) && letter.length == 1) {
-      foil = replaceAt(foil, foil.indexOf(guess[idx]))
-      return 'wrongSpot'
-    } 
-    return letter
-  })
-  .map((letter, idx, arr) => {
-    if(!~foil.indexOf(guess[idx]) && letter.length == 1) return 'wrongLetter'
-    return letter
-  })
+function getRowValidityMask(rowNumber = activeRow(), { gameBoard, wordle }) {
+  let guess = guesses(gameBoard);
+  guess = guess[rowNumber];
+  let foil = wordle;
+  return guess
+    .split('')
+    .map((letter, idx) => {
+      if (wordle[idx] == letter) {
+        foil = replaceAt(foil, idx);
+        return 'rightSpot';
+      }
+      return letter;
+    })
+    .map((letter, idx) => {
+      if (foil.match(guess[idx]) && letter.length == 1) {
+        foil = replaceAt(foil, foil.indexOf(guess[idx]));
+        return 'wrongSpot';
+      }
+      return letter;
+    })
+    .map((letter, idx, arr) => {
+      if (!~foil.indexOf(guess[idx]) && letter.length == 1)
+        return 'wrongLetter';
+      return letter;
+    });
 }
 
 // --------------------------------------------------------
-// UTILITY FUNCTIONS: 
+// UTILITY FUNCTIONS:
 // --------------------------------------------------------
 
 function html(html) {
   var template = document.createElement('template');
-  html = html.trim()
+  html = html.trim();
   template.innerHTML = html;
   return template.content.firstChild;
 }
 
 function $(selector) {
   return document.querySelector(selector);
-} 
+}
 
 function $$(selector) {
-  return document.querySelectorAll(selector)
+  return document.querySelectorAll(selector);
 }
 
 function replaceAt(str, idx) {
-  return str.slice(0,idx) + '#' + str.slice(idx + 1)
+  return str.slice(0, idx) + '#' + str.slice(idx + 1);
 }
 
-function pipe (...fns) {
-  return x => fns.reduce((v, f) => f(v), x)
+function pipe(...fns) {
+  return (x) => fns.reduce((v, f) => f(v), x);
 }
 
 function cssVar(cssVar) {
-  return getComputedStyle(document.body).getPropertyValue(`--${cssVar}`)
+  return getComputedStyle(document.body).getPropertyValue(`--${cssVar}`);
 }
 
 function getTiles() {
-  const tiles = []
+  const tiles = [];
   for (let i = 0; i < 6; i++) {
-    tiles.push(...$(`#row-${i}`)?.children || []);
+    tiles.push(...($(`#row-${i}`)?.children || []));
   }
   return tiles;
 }
 
-function pointer ({gameBoard} = State) {
+function pointer({ gameBoard } = State) {
   return gameBoard.reduce((acc, cur, idx, arr) => {
-    if ((!cur?.letter && !acc) || idx==arr.length -1 ) return idx
-    return acc
-  }, 0)
+    if ((!cur?.letter && !acc) || idx == arr.length - 1) return idx;
+    return acc;
+  }, 0);
 }
 
-function rowNum(point=State.pointer) {
-  if(point<0) point = 0
+function rowNum(point = State.pointer) {
+  if (point < 0) point = 0;
   return Math.floor(point / 5);
 }
 
-function activeRow({checked}=State) {
-  return checked.filter(i => i).length 
+function activeRow({ checked } = State) {
+  return checked.filter((i) => i).length;
 }
 
-function isRowDone({checked, pointer} = State) {
-  return (!checked[rowNum() -1] && ((rowNum(pointer -1) < rowNum())))
+function isRowDone({ checked, pointer } = State) {
+  return !checked[rowNum() - 1] && rowNum(pointer - 1) < rowNum();
 }
 
 function guesses(gameBoard) {
-  return gameBoard.reduce((acc,cur,idx, arr) => {
-    let groupNum = Math.floor(idx/5)
-    acc[groupNum] = (acc?.[groupNum] ?? '') + (cur.letter || '')
-    return acc
-  }, [])
+  return gameBoard.reduce((acc, cur, idx, arr) => {
+    let groupNum = Math.floor(idx / 5);
+    acc[groupNum] = (acc?.[groupNum] ?? '') + (cur.letter || '');
+    return acc;
+  }, []);
 }
 
 function getRowEls(rowNumber = activeRow(), kids = true) {
-  rowNumber = rowNumber == 6 ? 5 : rowNumber
-  const row = $(`#row-${rowNumber}`)
-  if (!kids) return row
+  rowNumber = rowNumber == 6 ? 5 : rowNumber;
+  const row = $(`#row-${rowNumber}`);
+  if (!kids) return row;
   return [...row?.children] ?? [];
 }
 
@@ -487,55 +533,82 @@ function collect(arr) {
   return arr.reduce((acc, cur) => acc + cur.innerText.toLowerCase(), '');
 }
 
-function clone (obj) {
-  return JSON.parse(JSON.stringify(obj || {}))
+function clone(obj) {
+  return JSON.parse(JSON.stringify(obj || {}));
 }
 
-function randomIdx (arr) {
-  return arr[Math.floor(Math.random() * arr.length)]
+function randomIdx(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
 }
 
 function generateWinningMessage(winningRow) {
-  const generalPraises = ['You Won!', 'Great Job!','You Rock!','Pure Genius!', 'Wonderful','Beautiful!','Gold Star!','Nice!','Very Cool!','You got it!','Keep it up!','wow!','incredible!','cheers!', 'Magnificent!', 'Impressive!', 'Splendid!', 'Way To Go!']
-  const lastLinePraises = ['phew!','close call!','I was worried about you there!']
-  const firstLinePraises = ['impossible!','I can\'t believe it!','How\'d you know?!','genius!','Cheater!']
-  
-    return (winningRow == 0 )
-      ? randomIdx(firstLinePraises)
-      : (winningRow == 5) 
-        ? randomIdx(lastLinePraises)
-        : randomIdx(generalPraises)
+  const generalPraises = [
+    'You Won!',
+    'Great Job!',
+    'You Rock!',
+    'Pure Genius!',
+    'Wonderful',
+    'Beautiful!',
+    'Gold Star!',
+    'Nice!',
+    'Very Cool!',
+    'You got it!',
+    'Keep it up!',
+    'wow!',
+    'incredible!',
+    'cheers!',
+    'Magnificent!',
+    'Impressive!',
+    'Splendid!',
+    'Way To Go!',
+  ];
+  const lastLinePraises = [
+    'phew!',
+    'close call!',
+    'I was worried about you there!',
+  ];
+  const firstLinePraises = [
+    'impossible!',
+    "I can't believe it!",
+    "How'd you know?!",
+    'genius!',
+    'Cheater!',
+  ];
+
+  return winningRow == 0
+    ? randomIdx(firstLinePraises)
+    : winningRow == 5
+    ? randomIdx(lastLinePraises)
+    : randomIdx(generalPraises);
 }
 
-function getColorScheme () {
+function getColorScheme() {
   window
-    .matchMedia("(prefers-color-scheme: dark)")
-    .addEventListener("change",   e => {
-      State.colorScheme = e.matches 
-        ? 'dark' 
-        : 'light'
-        paint(State, State)
-      }  );
+    .matchMedia('(prefers-color-scheme: dark)')
+    .addEventListener('change', (e) => {
+      State.colorScheme = e.matches ? 'dark' : 'light';
+      paint(State, State);
+    });
 }
 
-function getEmojiGameBoard () {
+function getEmojiGameBoard() {
   return State.gameBoard.reduce((acc, cur, idx) => {
-    const newLine = ((idx+1) % 5 == 0) ? '\n' : '';
-    const bgColor = getRowValidityMask(rowNum(idx),State)[idx % 5]
-    if(bgColor == 'rightSpot') return acc + '🟩' + newLine
-    if(bgColor == 'wrongSpot') return acc + '🟨' + newLine
-    return acc + '⬜' + newLine
-  },'')
+    const newLine = (idx + 1) % 5 == 0 ? '\n' : '';
+    const bgColor = getRowValidityMask(rowNum(idx), State)[idx % 5];
+    if (bgColor == 'rightSpot') return acc + '🟩' + newLine;
+    if (bgColor == 'wrongSpot') return acc + '🟨' + newLine;
+    return acc + '⬜' + newLine;
+  }, '');
 }
 
-function setup () {
-  getColorScheme()
+function setup() {
+  getColorScheme();
   const possibleWordsWorker = new Worker('possibleWords.js');
-  possibleWordsWorker.postMessage('')
-  possibleWordsWorker.onmessage = function(e) {
-    if (typeof e.data !== 'object') return
-    State.wordle = e.data.randomWord
-    possibleWords = e.data.possibleWordsMap 
-  }
-  return possibleWordsWorker
+  possibleWordsWorker.postMessage('');
+  possibleWordsWorker.onmessage = function (e) {
+    if (typeof e.data !== 'object') return;
+    State.wordle = e.data.randomWord;
+    possibleWords = e.data.possibleWordsMap;
+  };
+  return possibleWordsWorker;
 }

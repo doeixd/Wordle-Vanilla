@@ -1,6 +1,8 @@
 # Wordle - Vanilla
 **A [Wordle](http://www.powerlanguage.co.uk/wordle) clone made using vanilla JavaScript**
-**Demo:** [wordle-vanilla.vercel.app](https://wordle-vanilla.vercel.app/)
+<br />**Demo:** [wordle-vanilla.vercel.app](https://wordle-vanilla.vercel.app/)
+<br />**[Edit On StackBlitz ⚡️](stackblitz.com/edit/web-platform-q3ltjq)**
+
 ## Purpose
 I created this as an educational exercise, and as a project to add to my portfolio.
 
@@ -46,7 +48,7 @@ I intend for Wordle - Vanilla to become more fully featured than the original. H
 # To Do
 
 ## Bugs
-- [ ] Fix Pointer Bugs
+- [x] Fix Pointer Bugs
 - [x] Fix Last Letter not droping in
 - [x] Fix trying to style bars before created
 - [x] Fix Letters taking on last used styles 
@@ -55,8 +57,8 @@ I intend for Wordle - Vanilla to become more fully featured than the original. H
 ## Improvements
 - [x] Refactor gameboard to include tile state
 - [x] Refactor Rows to be zero based
-- [ ] Refactor pointer logic 
-- [ ] Refactor styling logic
+- [x] Refactor pointer logic 
+- [x] Refactor styling logic
 
 ## Features
 - [ ] Instructions Modal

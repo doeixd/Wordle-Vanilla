@@ -41,8 +41,8 @@
   --headerHeight: 80px;
   --headerBorderColor: var(--gray-2);
 
-  --statsIconColor: var(--gray-4);
-  --statsIconHoverColor: var(--gray-1);
+  --headerIconColor: var(--gray-4);
+  --headerIconHoverColor: var(--gray-1);
 
   --keyBG: #d3d6da;
   --borderColor: lightgrey;
@@ -138,22 +138,31 @@ h1 {
   line-height: var(--headerHeight);
 }
 
-#stats-icon {
+.header-icon {
   display: inline;
   justify-self: flex-end;
   position: absolute;
-  right: 12%;
   top: 28px;
   cursor: pointer;
   padding: 5px;
   border-radius: 100%;
   box-sizing: content-box;
   transition: .2s all;
+  fill: var(--headerIconColor)
 }
 
-#stats-icon:hover {
-  background-color: var(--statsIconHoverColor);
+.header-icon:hover {
+  background-color: var(--headerIconHoverColor);
 }
+
+#stats-icon {
+  right: 12%;
+}
+
+#github-icon {
+  left: 12%;
+}
+
 
 #game {
   display: contents;
