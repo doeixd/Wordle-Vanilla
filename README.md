@@ -47,8 +47,9 @@ I intend for Wordle - Vanilla to become more fully featured than the original. H
 
 ## Bugs
 - [ ] Fix Pointer Bugs
-- [ ] Fix drop in styles Bugs
-- [ ] Fix Letters taking on last used styles 
+- [x] Fix Last Letter not droping in
+- [x] Fix trying to style bars before created
+- [x] Fix Letters taking on last used styles 
 
 
 ## Improvements

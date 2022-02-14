@@ -112,20 +112,16 @@ function backspace () {
 }
 
 function enter() {
-  // return render(
-    // ({checked, wordle,gameBoard}) => {
       const {checked, wordle,gameBoard} = State 
       const guess = guesses(gameBoard)[activeRow({checked})]
       if (!possibleWords.has(guess)) return badWord()
       if (guess == wordle) return won()
       if (activeRow() == 5) return lost()
       return check()
-    // }
-  // )
 }
 
 function getCheckedGameboard (gameState) {
-  const row = activeRow(gameState)
+  const row = Math.min(activeRow(gameState), 5)
   const validityMask = getRowValidityMask(row, gameState)
   validityMask.forEach((state, idx) => {
     let tileIdx = idx + (row*5)
@@ -213,8 +209,6 @@ function newGame () {
 async function paint(oldGameState, newGameState) {
 
   newGameState.gameBoard.forEach(({letter, state}, idx) => {
-    // If painting current tile, and that tile has not been backspaced in to
-    if (idx == newGameState.pointer && newGameState.pointer > oldGameState.pointer && newGameState.gameBoard[oldGameState.pointer].letter) tiles?.[newGameState.pointer -1]?.classList.add('drop-in')
 
     if(letter) {
       const letterEl = $('#' + letter)
@@ -263,6 +257,7 @@ async function paintStats (_, {stats, winHistory}) {
 
 
 async function animateSumbittedRow (oldState, newState) {
+  console.log({oldState},{newState})
   if(activeRow(oldState) == activeRow(newState) && !newState.won) return
   const sumbittedRow  = getRowEls(activeRow(oldState))
   let done = await (new Promise((resolve, reject) => {
@@ -469,7 +464,8 @@ function rowNum(point=State.pointer) {
 }
 
 function activeRow({checked}=State) {
-  return Math.min(checked.filter(i => i).length, 5)
+  let row = checked.filter(i => i).length 
+  return row == 6 ? Infinity : row
 }
 
 function isRowDone({checked, pointer} = State) {

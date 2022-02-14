@@ -214,6 +214,7 @@ box {
 
 .guessedLetter {
   border: 2px solid var(--guessedBorderColor);
+  animation: drop-in .15s ease-out;
 }
 
 
@@ -243,9 +244,6 @@ box {
   }
 }
 
-.drop-in {
-  animation: drop-in .15s ease-out;
-}
 
 @keyframes flip {
   from {
