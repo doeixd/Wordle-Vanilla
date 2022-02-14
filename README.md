@@ -1,6 +1,6 @@
 # Wordle - Vanilla
 **A [Wordle](http://www.powerlanguage.co.uk/wordle) clone made using vanilla JavaScript**
-<br /><br />**Demo:** [wordle-vanilla.vercel.app](https://wordle-vanilla.vercel.app/)
+<br /><br />**[View Demo!](https://wordle-vanilla.vercel.app/)**
 <br />**[Edit On StackBlitz ⚡️](stackblitz.com/edit/web-platform-q3ltjq)**
 
 ## Purpose
