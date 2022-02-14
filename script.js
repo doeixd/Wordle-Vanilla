@@ -247,7 +247,7 @@ async function paintStats (_, {stats, winHistory}) {
     bar.innerText = winHistory[idx]
     ;(bar?.parentElement.animate([{height: '0%'}, {height: `${rowHeights[idx]}%`, backgroundColor: `var(--barRank-${Math.round(rowHeights[idx]/20)})`}], {duration: 350, easing: 'ease-in-out', delay: (170 * idx) + 250}))
       .onfinish = () => {
-        bar.parentElement.style.height = `${rowHeights[idx]}%`
+        bar.parentElement.style.height = `${rowHeights?.[idx] ?? 0}%`
         bar.parentElement.style.backgroundColor = `var(--barRank-${Math.round(rowHeights[idx]/20)})`
       }
   })

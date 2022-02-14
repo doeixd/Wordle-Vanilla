@@ -80,7 +80,7 @@
     --modalShadow: 0 0 50px 5px #1d1d1d, 5px 8px 16px 0px #0c0c0c;
 
     --headerBorderColor: var(--gray-10);
-    --statsIconColor: var(--gray-11);
+    --statsIconColor: var(--gray-9);
     --closeIconColor: var(--gray-10);
     --closeIconHoverColor: var(--gray-11);
 
@@ -92,12 +92,8 @@
     --winHistoryLabelColor: var(--gray-4);
 
     --keyboardButtonHoverBrightness: 1.25
-
-
   }
 }
-
-
 
 html {
   font-size: 18px;
@@ -317,11 +313,6 @@ svg {
   max-width: 75px;
   font-size: 66%
 }
-
-
-
-
-
 
 
 /* STATS MODAL */
