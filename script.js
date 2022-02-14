@@ -41,7 +41,7 @@ let tiles = getTiles()
 // RUNTIME:
 // --------------------------------------------------------
 
-document.addEventListener('keydown', (e, {pointer, gameBoard, wordle, won} = State) => {
+document.addEventListener('keydown', (e, {won} = State) => {
   if (won || activeRow() == 6 || $('stats-container').getAttribute('aria-hidden') == 'false') return
   if (e.key == 'Backspace') backspace();
   if (e.key == 'Enter' && isRowDone()) return enter();
