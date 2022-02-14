@@ -9,8 +9,6 @@ const localStorageGameState = () => localStorage.getItem('gameState')
 
 const defaultGameState = {
   wordle: null,
-  // TODO: I should change this to {letter, state}. It would clean things up a bit
-  // State can be one of: rightSpot, wrongSpot, wrongLetter, gusssed, or null
   gameBoard:  [...Array(30).keys()].map((i) => ({letter: null, state: null})),
   pointer: 0,
   checked: [null,null,null,null,null,null],
