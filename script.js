@@ -543,19 +543,3 @@ function setup () {
   }
   return possibleWordsWorker
 }
-
-
-
-// function makeGradient(...colors, steps = 5) {
-//   const result = []
-//   for(let c1 = 0, c2 = 1; c2 < colors.length; c1++, c2++ ) {
-//     for (let i = 0; i < Math.floor(colors.length/steps); i++) {
-//       let alpha = i / (n-1);  // 0.0 <= alpha <= 1.0 
-//       let L = (1-alpha) * c1.L + alpha * c2.L;
-//       let a = (1-alpha) * c1.a + alpha * c2.a;
-//       let b = (1-alpha) * c1.b + alpha * c2.b;
-//       result.push({L, a, b})
-//     }
-//   }
-//   return result
-// }
