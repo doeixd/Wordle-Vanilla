@@ -28,7 +28,7 @@ const defaultUserState = {
 };
 
 var State = localStorageGameState()?.persist
-  ? localStorageGameState
+  ? localStorageGameState()
   : { ...defaultGameState, ...defaultUserState };
 
 let possibleWords;
