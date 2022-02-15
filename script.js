@@ -244,6 +244,7 @@ async function paint(oldGameState, newGameState) {
 
     const { letter: oldLetter, state: oldState } = oldGameState.gameBoard[idx];
     if (oldLetter == letter && state == oldState) return;
+    const tiles = getTiles()
     tiles[idx].innerText = letter ?? '';
     tiles[idx].classList = '';
     tiles[idx].classList.add(state);
