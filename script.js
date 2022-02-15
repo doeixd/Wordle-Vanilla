@@ -339,7 +339,7 @@ async function animateWinningRow(_, { gameState }) {
   });
 }
 
-async function showGraph({ winHistory }) {
+async function showGraph(_, { winHistory }) {
   const gamesWon = winHistory.reduce((acc, cur) => acc + cur, 0);
   if (gamesWon == 0) return;
   $('graph').style.display = 'flex';
