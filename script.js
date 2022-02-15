@@ -32,7 +32,7 @@ var State = { ...defaultGameState, ...defaultUserState };
 localStorageGameState()?.persist && update(localStorageGameState())
 
 let possibleWords;
-let tiles = getTiles();
+var tiles = getTiles();
 
 // --------------------------------------------------------
 // RUNTIME:
@@ -166,14 +166,14 @@ function won() {
         gameBoard,
         pointer,
       } = gameState;
-      gameState.gameBoard = getCheckedGameboard(gameState);
+      gameBoard = getCheckedGameboard(gameState);
       checked[activeRow()] = true;
       winningRow = activeRow({ checked }) - 1;
       won = true;
       winHistory[winningRow - 1]++;
       pointer++;
       gameHistory.push({ wordle, gameBoard, won, checked });
-      return { winHistory, won, gameHistory, pointer };
+      return { winHistory, won, gameHistory, pointer, gameBoard };
     },
     [
       animateSumbittedRow,
@@ -244,7 +244,7 @@ async function paint(oldGameState, newGameState) {
 
     const { letter: oldLetter, state: oldState } = oldGameState.gameBoard[idx];
     if (oldLetter == letter && state == oldState) return;
-    const tiles = getTiles()
+    
     tiles[idx].innerText = letter ?? '';
     tiles[idx].classList = '';
     tiles[idx].classList.add(state);
