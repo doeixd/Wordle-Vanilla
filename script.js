@@ -170,7 +170,7 @@ function won() {
       checked[activeRow()] = true;
       winningRow = activeRow({ checked }) - 1;
       won = true;
-      winHistory[winningRow -1]++;
+      winHistory[winningRow]++;
       pointer++;
       gameHistory.push({ wordle, gameBoard, won, checked });
       return { winHistory, won, gameHistory, pointer, gameBoard };
