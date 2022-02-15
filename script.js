@@ -170,16 +170,16 @@ function won() {
       checked[activeRow()] = true;
       winningRow = activeRow({ checked }) - 1;
       won = true;
-      winHistory[winningRow - 1]++;
+      winHistory[winningRow -1]++;
       pointer++;
       gameHistory.push({ wordle, gameBoard, won, checked });
       return { winHistory, won, gameHistory, pointer, gameBoard };
     },
     [
       animateSumbittedRow,
-      (oldGameState) => {
-        const randomPriaise = generateWinningMessage(winningRow);
-        showToast(randomPriaise, 2.5, showStatsModal);
+      (oldGameState, newGameState) => {
+        const randomPraise = generateWinningMessage(winningRow);
+        showToast(randomPraise, 2.5, () => showStatsModal(oldGameState, newGameState));
       },
     ]
   );
