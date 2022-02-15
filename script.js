@@ -29,7 +29,7 @@ const defaultUserState = {
 
 var State = { ...defaultGameState, ...defaultUserState };
 
-localStorageGameState?.persist && update(State)
+localStorageGameState?.persist && update(localStorageGameState)
 
 let possibleWords;
 let tiles = getTiles();
