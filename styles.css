@@ -121,7 +121,7 @@ main {
   grid-template-rows: minmax(100px,6fr) 3fr;
   grid-template-columns: 1fr;
   margin: 0 auto;
-  height: calc(100vh - var(--headerHeight));
+  height: calc(100% - var(--headerHeight));
   gap: 5px;
   border-top: 1px solid var(--headerBorderColor);
 }
