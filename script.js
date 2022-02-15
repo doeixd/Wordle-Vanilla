@@ -27,9 +27,9 @@ const defaultUserState = {
   },
 };
 
-var State = localStorageGameState()?.persist
-  ? localStorageGameState()
-  : { ...defaultGameState, ...defaultUserState };
+var State = { ...defaultGameState, ...defaultUserState };
+
+localStorageGameState?.persist && update(State)
 
 let possibleWords;
 let tiles = getTiles();
@@ -219,6 +219,12 @@ function newGame() {
       },
     ]
   );
+}
+
+function update(newState) {
+  return render(
+    () => newState
+  )
 }
 
 // --------------------------------------------------------
@@ -607,7 +613,7 @@ function setup() {
   possibleWordsWorker.postMessage('');
   possibleWordsWorker.onmessage = function (e) {
     if (typeof e.data !== 'object') return;
-    State.wordle = e.data.randomWord;
+    if(!State.wordle) State.wordle = e.data.randomWord;
     possibleWords = e.data.possibleWordsMap;
   };
   return possibleWordsWorker;
