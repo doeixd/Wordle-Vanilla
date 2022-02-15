@@ -332,7 +332,7 @@ async function animateWinningRow(_, { gameState }) {
       ],
       {
         duration: 450,
-        delay: idx * 100 + 650,
+        delay: idx * 100 + 750,
         easing: 'ease-out',
       }
     );
