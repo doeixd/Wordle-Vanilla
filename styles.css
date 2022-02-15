@@ -81,6 +81,8 @@
     --modalShadow: 0 0 50px 5px #1d1d1d, 5px 8px 16px 0px #0c0c0c;
 
     --headerBorderColor: var(--gray-10);
+    --headerIconHoverColor: var(--gray-11);
+    
     --statsIconColor: var(--gray-9);
     --statsIconHoverColor: var(--gray-11);
 
