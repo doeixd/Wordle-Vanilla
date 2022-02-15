@@ -82,7 +82,7 @@
 
     --headerBorderColor: var(--gray-10);
     --headerIconHoverColor: var(--gray-11);
-    
+
     --statsIconColor: var(--gray-9);
     --statsIconHoverColor: var(--gray-11);
 
@@ -117,14 +117,14 @@ body {
 
 main {
   width: 100%;
-  padding-top: 19px;
+  padding-top: 30px;
   max-width: 500px;
   display: grid;
   grid-template-rows: minmax(100px,6fr) 3fr;
   grid-template-columns: 1fr;
   margin: 0 auto;
   height: calc(100% - var(--headerHeight));
-  gap: 5px;
+  gap: 35px;
   border-top: 1px solid var(--headerBorderColor);
 }
 
@@ -288,7 +288,7 @@ keyboard {
   width: inherit;
   height: fill-available;
   user-select: none;
-  padding: 6px;
+  padding: 10px;
 }
 
 keyboard-row {
