@@ -7,7 +7,7 @@ const possibleWordsWorker = setup();
 const localStorageGameState = () => JSON.parse(localStorage.getItem('gameState'));
 
 const defaultGameState = {
-  wordle: null,
+  wordle: 'megan',
   gameBoard: [...Array(30).keys()].map((i) => ({ letter: null, state: null })),
   pointer: 0,
   checked: [null, null, null, null, null, null],
@@ -279,15 +279,15 @@ async function paintStats(_, { stats, winHistory }) {
       [
         { height: '0%' },
         {
-          height: `${rowHeights[idx]}%`,
-          backgroundColor: `var(--barRank-${Math.round(rowHeights[idx] / 20)})`,
+          height: `${rowHeights?.[idx] ?? 0}%`,
+          backgroundColor: `var(--barRank-${Math.round((rowHeights?.[idx] ?? 0) / 20)})`,
         },
       ],
       { duration: 350, easing: 'ease-in-out', delay: 170 * idx + 250 }
     )).onfinish = () => {
       bar.parentElement.style.height = `${rowHeights?.[idx] ?? 0}%`;
       bar.parentElement.style.backgroundColor = `var(--barRank-${Math.round(
-        rowHeights[idx] / 20
+        (rowHeights?.[idx] ?? 0) / 20
       )})`;
     };
   });
