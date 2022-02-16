@@ -7,7 +7,7 @@
 
 *:focus {
   outline: none;
-  box-shadow: 0px 0px 2px 2px #6daff5; 
+  box-shadow: 0px 0px 2px 2px #6daff5;
   transition: box-shadow .25s ease-out;
 }
 
@@ -27,7 +27,7 @@
   --gray-11: #1d1d1d;
   --gray-12: #121213;
   --gray-13: #0c0c0c;
-  
+
   --textColor: var(--gray-10);
   --bgColor: white;
   --overlayColor: #ffffffaa;
@@ -103,16 +103,15 @@
 html {
   font-size: 18px;
   color: var(--textColor);
-  height: -webkit-fill-available;
   background-color: var(--bgColor);
   -webkit-font-smoothing: antialiased;
+  overflow: hidden;
   height: 100%;
 }
 
 body {
   width: 100%;
-  max-height: 100%;
-  max-height: -webkit-fill-available;
+  height: 100%;
 }
 
 main {
@@ -317,14 +316,29 @@ keyboard-row button {
   transition: background-color .15s, color .15s, transform .15s;
 }
 
-keyboard-row button:hover {
-  transform: scale(1.13);
-  filter: brightness(var(--keyboardButtonHoverBrightness))
+keyboard-row button {
+  font-size: .8rem;
+  transition: background-color .15s, color .15s, transform .15s;
 }
 
 keyboard-row button:focus {
-  transform: scale(1);
+  box-shadow: none;
+  transition: background-color .15s, color .15s, transform .15s;
 }
+
+@media screen and (min-width: 1047px) {
+  keyboard-row button:hover {
+    transform: scale(1.13);
+    filter: brightness(var(--keyboardButtonHoverBrightness));
+    transition: background-color .15s, color .15s, transform .15s;
+  }
+}
+
+  keyboard-row button:active {
+    transform: scale(1);
+  transition: background-color .15s, color .15s, transform .15s;
+  }
+
 
 svg {
   /* stroke: var(--textColor); */

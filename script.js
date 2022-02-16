@@ -371,14 +371,14 @@ function badWord() {
   );
 }
 
-function showToast(msg, time = 1, cb = () => {}) {
+function showToast(msg, time = 1, cb = () => { }) {
   const toastContainer = $('toast-container');
 
   const toastTemplate = html(`<toast>${msg.toUpperCase()}</toast>`);
   toastContainer.prepend(toastTemplate);
   const toast = toastContainer.firstChild;
 
-  setTimeout(function () {
+  setTimeout(function() {
     toast.animate([{ opacity: '1' }, { opacity: '0' }], 400).onfinish = () => {
       toastContainer.removeChild(toast);
     };
@@ -585,8 +585,8 @@ function generateWinningMessage(winningRow) {
   return winningRow == 0
     ? randomIdx(firstLinePraises)
     : winningRow == 5
-    ? randomIdx(lastLinePraises)
-    : randomIdx(generalPraises);
+      ? randomIdx(lastLinePraises)
+      : randomIdx(generalPraises);
 }
 
 function getColorScheme() {
@@ -612,10 +612,13 @@ function setup() {
   getColorScheme();
   const possibleWordsWorker = new Worker('possibleWords.js');
   possibleWordsWorker.postMessage('');
-  possibleWordsWorker.onmessage = function (e) {
+  possibleWordsWorker.onmessage = function(e) {
     if (typeof e.data !== 'object') return;
-    if(!State.wordle) State.wordle = e.data.randomWord;
+    if (!State.wordle) State.wordle = e.data.randomWord;
     possibleWords = e.data.possibleWordsMap;
   };
+
+
+
   return possibleWordsWorker;
 }
