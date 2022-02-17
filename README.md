@@ -1,7 +1,7 @@
 # Wordle - Vanilla
 **A [Wordle](http://www.powerlanguage.co.uk/wordle) clone made using vanilla JavaScript**
 <br /><br />**[View Demo!](https://wordle-vanilla.vercel.app/)**
-<br />**[Edit On StackBlitz ⚡️](stackblitz.com/edit/web-platform-q3ltjq)**
+<br />**[Edit On StackBlitz ⚡️](https://stackblitz.com/edit/web-platform-q3ltjq)**
 
 ## Purpose
 I created this as an educational exercise, all rights to Wordle belong to it's respective owner
