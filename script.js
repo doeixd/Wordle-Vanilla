@@ -140,8 +140,8 @@ function setStats() {
       stats.gamesPlayed = gameHistory.length;
       stats.winPercent =
         Math.round(
-          winHistory.reduce((acc, cur) => acc + cur, 0) / stats.gamesPlayed || 0
-        ) * 100;
+          (winHistory.reduce((acc, cur) => acc + cur, 0) / stats.gamesPlayed || 0)
+         * 100);
       stats.currentStreak = gameHistory.reduce((acc, cur) => {
         return !cur.won && acc > 0 ? acc : acc + 1;
       }, 0);
