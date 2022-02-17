@@ -618,7 +618,5 @@ function setup() {
     possibleWords = e.data.possibleWordsMap;
   };
 
-
-
   return possibleWordsWorker;
 }
