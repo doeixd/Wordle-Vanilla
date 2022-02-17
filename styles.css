@@ -170,13 +170,13 @@ h1 {
   display: contents;
 }
 
-board-container {
+#board-container {
   display: flex;
   align-items: center;
   padding: 0 10px;
 }
 
-game-board {
+#game-board {
   display: grid;
   gap: 5px;
   height: 100%;
@@ -274,7 +274,7 @@ box {
 /* KEYBOARD */
 /* ----------------------------- */
 
-keyboard-container {
+#keyboard-container {
   display: flex;
   width: 100%;
   align-items: end;
@@ -282,7 +282,7 @@ keyboard-container {
   z-index: 2;
 }
 
-keyboard {
+#keyboard {
   display: block;
   width: inherit;
   height: fill-available;
