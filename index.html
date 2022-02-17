@@ -1,8 +1,11 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <link rel="stylesheet" type="text/css" href="styles.css">
+    <title>Wordle Infinite</title>
+    <meta name="description" content="A Wordle clone with Infinite game play">
   </head>
   <body>
     <toast-container></toast-container>
@@ -17,9 +20,9 @@
       </svg>
     </header>
     <main>
-      <span id='game' aria-region='Game Area'>
+      <span id='game' role="region" aria-region='Game Area'>
       <board-container>
-      <game-board>
+      <game-board aria-label="Game Board">
         <row id="row-0">
           <box id="row-0-box-1"></box>
           <box id="row-0-box-2"></box>
@@ -65,7 +68,7 @@
       </game-board>
     </board-container>
     <keyboard-container>
-      <keyboard>
+      <keyboard aria-label="Keyboard">
         <keyboard-row>
           <button id='q'>q</button>
           <button id='w'>w</button>
@@ -98,7 +101,7 @@
           <button id='b'>b</button>
           <button id='n'>n</button>
           <button id='m'>m</button>
-          <button id='backspace'>
+          <button aria-label="Backspace" id='backspace'>
           <svg id='backspaceIcon' xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
             <path fill="var(--color-tone-1)" d="M22 3H7c-.69 0-1.23.35-1.59.88L0 12l5.41 8.11c.36.53.9.89 1.59.89h15c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H7.07L2.4 12l4.66-7H22v14zm-11.59-2L14 13.41 17.59 17 19 15.59 15.41 12 19 8.41 17.59 7 14 10.59 10.41 7 9 8.41 12.59 12 9 15.59z"></path>
           </svg>
@@ -118,7 +121,7 @@
       <stats>
         <header id='statsHeader'>  
           <h2> Statistics </h2>
-          <svg id='closeIcon' role="button" onclick='closeStatsModal(this)' xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+          <svg id='closeIcon' role="button" aria-label="Close" onclick='closeStatsModal(this)' xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
             <path fill="var(--color-tone-3)" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
           </svg>
         </header>
@@ -143,7 +146,7 @@
 
         <win-history>
           <no-history> You Have Not Won Yet </no-history>
-          <graph>
+          <graph aria-role="figure">
             <bar-container>
               <bar id='bar-1'>
                 <bar-text></bar-text>
