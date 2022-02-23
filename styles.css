@@ -630,13 +630,13 @@ toast-container {
   position: absolute;
   left: calc(50% - 95px);
   width: 190px;
-  height: calc(100vh - calc(var(--headerHeight) + 3px));
+  height: calc(99vh - var(--headerHeight));
   overflow: hidden;
   display: grid;
   grid-template-columns: 1fr;
   grid-auto-rows: min-content;
   gap: 20px;
-  top: var(--headerHeight);
+  top: calc(var(--headerHeight) + 4px);
   pointer-events: none;
 }
 
