@@ -627,7 +627,8 @@ function setup() {
   return possibleWordsWorker;
 }
 
-document.addEventListener('scroll', e => {
+document.addEventListener('touchmove', e => {
+  e.preventDefault()
   // document.body.scrollTop = document.documentElement.scrollTop = 0;
   window.scroll({
     top: 0, 
