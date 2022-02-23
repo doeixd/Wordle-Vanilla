@@ -238,6 +238,12 @@ function update(newState) {
 // --------------------------------------------------------
 
 async function paint(oldGameState, newGameState) {
+  if (newGameState.colorScheme) {
+    if (newGameState.colorScheme == 'light') document.documentElement.classList.remove('dark')
+    if (newGameState.colorScheme == 'dark') document.documentElement.classList.remove('light')
+    document.documentElement.classList.add(newGameState.colorScheme)
+  }
+
   newGameState.gameBoard.forEach(({ letter, state }, idx) => {
     if (letter) {
       const letterEl = $('#' + letter);
