@@ -233,7 +233,7 @@ function update(newState) {
   )
 }
 
-function toggleDarkMode () {
+function toggleColorScheme () {
   return render (({colorScheme}) => {
     colorScheme == 'dark' ? 'light' : 'dark'
     return {colorScheme}
