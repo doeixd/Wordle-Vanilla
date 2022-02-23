@@ -629,10 +629,12 @@ function setup() {
 
 document.addEventListener('touchmove', e => {
   e.preventDefault()
+  e.stopImmediatePropagation()
   // document.body.scrollTop = document.documentElement.scrollTop = 0;
   window.scroll({
     top: 0, 
     left: 0, 
     behavior: 'smooth' 
-  });
-})
+  })
+
+}, {passive: false})
