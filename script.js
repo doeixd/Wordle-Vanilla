@@ -249,7 +249,7 @@ async function paint(oldGameState, newGameState) {
     if (newGameState.colorScheme == 'light') document.documentElement.classList.remove('dark')
     if (newGameState.colorScheme == 'dark') document.documentElement.classList.remove('light')
     document.documentElement.classList.add(newGameState.colorScheme)
-    $('html').classList.add('transistion')
+    // $('html').classList.add('transistion')
   }
 
   newGameState.gameBoard.forEach(({ letter, state }, idx) => {
