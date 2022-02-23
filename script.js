@@ -233,6 +233,13 @@ function update(newState) {
   )
 }
 
+function toggleDarkMode () {
+  return render (({colorScheme}) => {
+    colorScheme == 'dark' ? 'light' : 'dark'
+    return {colorScheme}
+  })
+}
+
 // --------------------------------------------------------
 // EFFECTFUL:
 // --------------------------------------------------------
@@ -241,6 +248,7 @@ async function paint(oldGameState, newGameState) {
   if (newGameState.colorScheme) {
     if (newGameState.colorScheme == 'light') document.documentElement.classList.remove('dark')
     if (newGameState.colorScheme == 'dark') document.documentElement.classList.remove('light')
+    $('html').classList.add('transition')
     document.documentElement.classList.add(newGameState.colorScheme)
   }
 
@@ -643,22 +651,3 @@ function setup() {
 }
 
 
-function toggleDarkMode() {
-  if (document.documentElement.classList.contains("light")) {
-    document.documentElement.classList.remove("light")
-    document.documentElement.classList.add("dark")
-    update({...State, colorScheme: 'dark'})
-  } else if (document.documentElement.classList.contains("dark")) {
-    document.documentElement.classList.remove("dark")
-    document.documentElement.classList.add("light")
-    update({...State, colorScheme: 'light'})
-  } else {
-    if (window?.matchMedia('(prefers-color-scheme: dark)').matches) {
-      document.documentElement.classList.add("light")
-      update({...State, colorScheme: 'light'})
-    } else {
-      document.documentElement.classList.add("dark")
-      update({...State, colorScheme: 'dark'})
-    }
-  }
-}
