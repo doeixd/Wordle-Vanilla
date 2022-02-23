@@ -626,3 +626,5 @@ function setup() {
 
   return possibleWordsWorker;
 }
+
+document.addEventListener('scroll', e => e.preventDefault())
