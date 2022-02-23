@@ -1,0 +1,15 @@
+{
+  "short_name": "Wordle Infinite",
+  "name": "Wordle Infinite",
+  "icons": [
+    {
+      "src": "/images/icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "24x24"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "scope": "/",
+  "description": "An Infinite Wordle Game"
+}
