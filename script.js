@@ -627,4 +627,6 @@ function setup() {
   return possibleWordsWorker;
 }
 
-document.addEventListener('scroll', e => e.preventDefault())
+document.addEventListener('scroll', e => {
+  document.body.scrollTop = document.documentElement.scrollTop = 0;
+})
