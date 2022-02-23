@@ -636,7 +636,7 @@ toast-container {
   grid-template-columns: 1fr;
   grid-auto-rows: min-content;
   gap: 20px;
-  top: calc(var(--headerHeight) + 4px);
+  top: calc(var(--headerHeight) + 6px);
   pointer-events: none;
 }
 
