@@ -598,7 +598,7 @@ toast-container {
   position: absolute;
   left: calc(50% - 95px);
   width: 190px;
-  height: calc(100vh - var(--headerHeight));
+  height: calc(100vh - calc(var(--headerHeight) + 3px));
   overflow: hidden;
   display: grid;
   grid-template-columns: 1fr;

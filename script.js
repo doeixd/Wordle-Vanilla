@@ -623,18 +623,19 @@ function setup() {
     if (!State.wordle) State.wordle = e.data.randomWord;
     possibleWords = e.data.possibleWordsMap;
   };
+  
+  document.addEventListener('touchmove', e => {
+    e.preventDefault()
+    e.stopImmediatePropagation()
+  
+    window.scroll({
+      top: 0, 
+      left: 0, 
+      behavior: 'smooth' 
+    })
 
+  }, {passive: false})
+  
   return possibleWordsWorker;
 }
 
-document.addEventListener('touchmove', e => {
-  e.preventDefault()
-  e.stopImmediatePropagation()
-  // document.body.scrollTop = document.documentElement.scrollTop = 0;
-  window.scroll({
-    top: 0, 
-    left: 0, 
-    behavior: 'smooth' 
-  })
-
-}, {passive: false})
