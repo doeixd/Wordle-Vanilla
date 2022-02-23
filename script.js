@@ -144,7 +144,7 @@ function setStats() {
          * 100);
       
       let currentStreak = 0
-      for (let game of gameHistory) {
+      for (let game of gameHistory.reverse()) {
         if (!game.won) break
         currentStreak++
       }
