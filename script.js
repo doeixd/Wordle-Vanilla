@@ -248,7 +248,7 @@ async function paint(oldGameState, newGameState) {
   if (newGameState.colorScheme) {
     if (newGameState.colorScheme == 'light') document.documentElement.classList.remove('dark')
     if (newGameState.colorScheme == 'dark') document.documentElement.classList.remove('light')
-    $('html').classList.add('transition')
+    $('html').classList.add('transistion')
     document.documentElement.classList.add(newGameState.colorScheme)
   }
 
