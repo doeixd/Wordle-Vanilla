@@ -595,15 +595,6 @@ function generateWinningMessage(winningRow) {
       : randomIdx(generalPraises);
 }
 
-function getColorScheme() {
-  window
-    .matchMedia('(prefers-color-scheme: dark)')
-    .addEventListener('change', (e) => {
-      State.colorScheme = e.matches ? 'dark' : 'light';
-      paint(State, State);
-    });
-}
-
 function getEmojiGameBoard() {
   return State.gameBoard.reduce((acc, cur, idx) => {
     const newLine = (idx + 1) % 5 == 0 ? '\n' : '';
@@ -615,7 +606,14 @@ function getEmojiGameBoard() {
 }
 
 function setup() {
-  getColorScheme();
+  // getColorScheme
+  window
+    .matchMedia('(prefers-color-scheme: dark)')
+    .addEventListener('change', (e) => {
+      State.colorScheme = e.matches ? 'dark' : 'light';
+      paint(State, State);
+    });
+
   const possibleWordsWorker = new Worker('possibleWords.js');
   possibleWordsWorker.postMessage('');
   possibleWordsWorker.onmessage = function(e) {
