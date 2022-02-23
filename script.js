@@ -610,8 +610,7 @@ function setup() {
   window
     .matchMedia('(prefers-color-scheme: dark)')
     .addEventListener('change', (e) => {
-      State.colorScheme = e.matches ? 'dark' : 'light';
-      paint(State, State);
+      update({...State, colorScheme: (e.matches ? 'dark' : 'light')})
     });
 
   const possibleWordsWorker = new Worker('possibleWords.js');
@@ -642,14 +641,18 @@ function toggleDarkMode() {
   if (document.documentElement.classList.contains("light")) {
     document.documentElement.classList.remove("light")
     document.documentElement.classList.add("dark")
+    update({...State, colorScheme: 'dark'})
   } else if (document.documentElement.classList.contains("dark")) {
     document.documentElement.classList.remove("dark")
     document.documentElement.classList.add("light")
+    update({...State, colorScheme: 'light'})
   } else {
     if (window?.matchMedia('(prefers-color-scheme: dark)').matches) {
       document.documentElement.classList.add("light")
+      update({...State, colorScheme: 'light'})
     } else {
       document.documentElement.classList.add("dark")
+      update({...State, colorScheme: 'dark'})
     }
   }
 }
