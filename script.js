@@ -652,3 +652,4 @@ function toggleDarkMode() {
       document.documentElement.classList.add("dark")
     }
   }
+}
