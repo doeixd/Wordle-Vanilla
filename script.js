@@ -142,12 +142,18 @@ function setStats() {
         Math.round(
           (winHistory.reduce((acc, cur) => acc + cur, 0) / stats.gamesPlayed || 0)
          * 100);
-      stats.currentStreak = gameHistory.reduce((acc, cur) => {
-        return !cur.won && acc > 0 ? acc : acc + 1;
-      }, 0);
+      
+      let currentStreak = 0
+      for (let game of gameHistory) {
+        if (!game.won) break
+        currentStreak++
+      }
+      stats.currentStreak = currentStreak
+
       if (stats.currentStreak > stats.maxStreak)
         stats.maxStreak = stats.currentStreak;
-      return { stats };
+      
+        return { stats };
     },
     [paintStats, showGraph]
   );
