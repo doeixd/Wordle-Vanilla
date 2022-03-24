@@ -214,7 +214,6 @@ function newGame() {
   return render(
     ({ wordle }) => {
       wordle = possibleWordsWorker.postMessage('newWordle');
-      closeStatsModal();
       return {
         ...defaultGameState,
         wordle: wordle,
@@ -222,9 +221,11 @@ function newGame() {
     },
     [
       () => {
+        closeStatsModal();
         [...$$('keyboard-row button')].forEach((key) =>
           key.setAttribute('style', '')
         );
+        $$('toast-container').replaceChildren()
       },
     ]
   );
