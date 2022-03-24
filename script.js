@@ -8,7 +8,8 @@ const localStorageGameState = () => JSON.parse(localStorage.getItem('gameState')
 
 const defaultGameState = {
   wordle: '',
-  gameBoard: [...Array(30).keys()].map((i) => ({ letter: null, state: null })),
+  //state can be one of: rightSpot, wrongSpot, wrongLetter, gusssed, or null
+  gameBoard: Array.from({length: 30}, _ => ({letter: null, state: null})),
   pointer: 0,
   checked: [null, null, null, null, null, null],
   won: false,
