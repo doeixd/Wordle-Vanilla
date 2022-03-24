@@ -282,7 +282,7 @@ async function paint(oldGameState, newGameState) {
       });
   });
   
-  if (newGameState.pointer == 30 && !newGameState.won && !$('tost-container').children.length)
+  if (newGameState.pointer == 30 && !newGameState.won)
     showToast(newGameState.wordle, null, null, true)
 }
 
