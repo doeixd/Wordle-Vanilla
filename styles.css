@@ -609,6 +609,7 @@ toast-container {
   gap: 20px;
   top: calc(var(--headerHeight) + 6px);
   pointer-events: none;
+  z-index: 2;
 }
 
 toast {
@@ -625,7 +626,6 @@ toast {
   opacity: 1;
   font-size: .80rem;
   position: relative;
-  z-index: 10;
 }
 
 @keyframes fade-in {
