@@ -621,8 +621,6 @@ function getEmojiGameBoard() {
 }
 
 function setup() {
-  if (State?.pointer == 30 && !State?.won)
-    showToast(State?.wordle, null, _ => {}, true)
   // getColorScheme
   window
     .matchMedia('(prefers-color-scheme: dark)')
@@ -653,4 +651,5 @@ function setup() {
   return possibleWordsWorker;
 }
 
-
+if (State?.pointer == 30 && !State?.won)
+  showToast(State?.wordle, null, _ => {}, true)
