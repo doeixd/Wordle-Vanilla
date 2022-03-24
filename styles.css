@@ -513,7 +513,7 @@ bar-container {
 
 bar {
   display: block;
-  min-height: 5px;
+  min-height: 2px;
   background-color: var(--winHistoryBarColor);
   width: 100%;
   color: var(--winHistoryBarTextColor);
