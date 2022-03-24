@@ -397,10 +397,10 @@ function badWord() {
   );
 }
 
-function showToast(msg, time = 1, cb = () => { }, persist = false) {
+function showToast(msg, time = 1, cb = () => { }, persist = false, style = '') {
   const toastContainer = $('toast-container');
 
-  const toastTemplate = html(`<toast>${msg.toUpperCase()}</toast>`);
+  const toastTemplate = html(`<toast style=${style}>${msg.toUpperCase()}</toast>`);
   toastContainer.prepend(toastTemplate);
   const toast = toastContainer.firstChild;
 
@@ -460,7 +460,7 @@ function closeStatsModal(e) {
 function share() {
   const share = getEmojiGameBoard();
   navigator.clipboard.writeText(share);
-  showToast('Copied to Clipboard', 2);
+  showToast('Copied to Clipboard', 2, null, null, 'z-index:4');
 }
 
 function getRowValidityMask(rowNumber = activeRow(), { gameBoard, wordle }) {
