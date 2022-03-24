@@ -609,7 +609,6 @@ toast-container {
   gap: 20px;
   top: calc(var(--headerHeight) + 6px);
   pointer-events: none;
-  z-index: 2;
 }
 
 toast {
