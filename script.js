@@ -225,8 +225,8 @@ function newGame() {
         [...$$('keyboard-row button')].forEach((key) =>
           key.setAttribute('style', '')
         );
-        $$('toast-container').replaceChildren()
-      },
+        $('toast-container').replaceChildren()
+      }
     ]
   );
 }
