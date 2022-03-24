@@ -409,7 +409,7 @@ function showToast(msg, time = 1, cb = () => { }, persist = false, style = '') {
       toast.animate([{ opacity: '1' }, { opacity: '0' }], 400).onfinish = () => {
         toastContainer.removeChild(toast);
       };
-    cb();
+    cb?.();
   }, time * 1000);
 }
 
@@ -652,4 +652,4 @@ function setup() {
 }
 
 if (State?.pointer == 30 && !State?.won)
-  showToast(State?.wordle, null, _ => {}, true)
+  showToast(State?.wordle, null, null, true)
