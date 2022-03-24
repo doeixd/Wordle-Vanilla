@@ -7,7 +7,7 @@ const possibleWordsWorker = setup();
 const localStorageGameState = () => JSON.parse(localStorage.getItem('gameState'));
 
 const defaultGameState = {
-  wordle: 'megan',
+  wordle: '',
   gameBoard: [...Array(30).keys()].map((i) => ({ letter: null, state: null })),
   pointer: 0,
   checked: [null, null, null, null, null, null],
@@ -64,17 +64,19 @@ $$('keyboard-row button').forEach((button) => {
 });
 
 function render(actions, effects = []) {
+  // Ensure actions and effects are arrays
   actions = [actions].flat();
   effects = [effects].flat();
-  const oldGameState = clone(State);
 
+  const oldGameState = clone(State);
   const newGameState =
     actions.length &&
     actions.reduce((acc, cur) => {
       return Object.assign(clone(oldGameState), cur(clone(acc)));
     }, clone(State));
-  const effectsToRun = [...effects, paint, persist];
   State = newGameState;
+  
+  const effectsToRun = [...effects, paint, persist];
   (async () => {
     for (let effect of effectsToRun) {
       await effect(oldGameState, newGameState);
@@ -203,7 +205,7 @@ function lost() {
     },
     [
       animateSumbittedRow,
-      ({ wordle }) => showToast(wordle, 2.5, showStatsModal),
+      ({ wordle }) => showToast(wordle, 2.5, showStatsModal, true),
     ]
   );
 }
@@ -393,7 +395,7 @@ function badWord() {
   );
 }
 
-function showToast(msg, time = 1, cb = () => { }) {
+function showToast(msg, time = 1, cb = () => { }, persist = false) {
   const toastContainer = $('toast-container');
 
   const toastTemplate = html(`<toast>${msg.toUpperCase()}</toast>`);
@@ -401,9 +403,10 @@ function showToast(msg, time = 1, cb = () => { }) {
   const toast = toastContainer.firstChild;
 
   setTimeout(function() {
-    toast.animate([{ opacity: '1' }, { opacity: '0' }], 400).onfinish = () => {
-      toastContainer.removeChild(toast);
-    };
+    if (!persist) 
+      toast.animate([{ opacity: '1' }, { opacity: '0' }], 400).onfinish = () => {
+        toastContainer.removeChild(toast);
+      };
     cb();
   }, time * 1000);
 }
@@ -461,6 +464,7 @@ function share() {
 function getRowValidityMask(rowNumber = activeRow(), { gameBoard, wordle }) {
   let guess = guesses(gameBoard);
   guess = guess[rowNumber];
+  // The following logic is necessary because of how the OG wordle handles duplicate letters, see "Note on Rules" in readme
   let foil = wordle;
   return guess
     .split('')
