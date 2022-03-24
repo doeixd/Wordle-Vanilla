@@ -281,9 +281,6 @@ async function paint(oldGameState, newGameState) {
         key.classList = '';
       });
   });
-  
-  if (newGameState.pointer == 30 && !newGameState.won)
-    showToast(newGameState.wordle, null, null, true)
 }
 
 async function paintStats(_, { stats, winHistory }) {
@@ -650,6 +647,9 @@ function setup() {
     })
 
   }, {passive: false})
+
+  if (State.pointer == 30 && !State.won)
+    showToast(State.wordle, null, null, true)
   
   return possibleWordsWorker;
 }
