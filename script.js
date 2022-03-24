@@ -50,6 +50,7 @@ document.addEventListener('keydown', (e, { won } = State) => {
   if (e.key.match(/^[a-z]|[A-Z]$/)) add(e.key.toLowerCase());
 });
 
+// Foward clicks of the "keyboard" to the above handler
 $$('keyboard-row button').forEach((button) => {
   button.addEventListener('click', (e) => {
     let key;
@@ -261,9 +262,10 @@ async function paint(oldGameState, newGameState) {
       state == 'wrongSpot' && letterEl.classList.add('wrongSpot');
       state == 'rightSpot' && letterEl.classList.add('rightSpot');
     }
-
+    // Dont bother repainting tiles
     const { letter: oldLetter, state: oldState } = oldGameState.gameBoard[idx];
     if (oldLetter == letter && state == oldState) return;
+
     const tiles = getTiles();
     tiles[idx].innerText = letter ?? '';
     tiles[idx].classList = '';
@@ -439,6 +441,7 @@ function closeStatsModal(e) {
   $('h1').classList.remove('blur');
   $('#game').classList.remove('blur');
   $('#game').setAttribute('aria-hidden', 'false');
+  $$('[id^="bar"]').forEach((bar) => {bar.style.height = 0; bar.style.backgroundColor = 'var(--winHistoryBarColor)'});
   $('stats-container').setAttribute('aria-hidden', 'true');
   $('stats').classList = '';
   $('stats').animate(
@@ -503,14 +506,6 @@ function $$(selector) {
 
 function replaceAt(str, idx) {
   return str.slice(0, idx) + '#' + str.slice(idx + 1);
-}
-
-function pipe(...fns) {
-  return (x) => fns.reduce((v, f) => f(v), x);
-}
-
-function cssVar(cssVar) {
-  return getComputedStyle(document.body).getPropertyValue(`--${cssVar}`);
 }
 
 function getTiles() {
