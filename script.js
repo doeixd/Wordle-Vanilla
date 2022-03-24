@@ -648,8 +648,11 @@ function setup() {
 
   }, {passive: false})
 
-  if (State.pointer == 30 && !State.won)
-    showToast(State.wordle, null, _ => {}, true)
+  document.onload(_ => {
+    if (State?.pointer == 30 && !State?.won)
+    showToast(State?.wordle, null, _ => {}, true)
+  })
+
   
   return possibleWordsWorker;
 }
