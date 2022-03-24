@@ -280,9 +280,10 @@ async function paint(oldGameState, newGameState) {
       $$('keyboard-row button').forEach((key) => {
         key.classList = '';
       });
-    if (newGameState.pointer == 30 && !newGameState.won)
-      showToast(newGameState.wordle, null, null, true)
   });
+  
+  if (newGameState.pointer == 30 && !newGameState.won && !$('tost-container').children.length)
+    showToast(newGameState.wordle, null, null, true)
 }
 
 async function paintStats(_, { stats, winHistory }) {
