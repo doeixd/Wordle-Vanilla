@@ -7,7 +7,7 @@ const possibleWordsWorker = setup();
 const localStorageGameState = () => JSON.parse(localStorage.getItem('gameState'));
 
 const defaultGameState = {
-  wordle: '',
+  wordle: 'jamie',
   //state can be one of: rightSpot, wrongSpot, wrongLetter, gusssed, or null
   gameBoard: Array.from({length: 30}, _ => ({letter: null, state: null})),
   pointer: 0,
