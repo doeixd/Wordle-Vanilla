@@ -47,6 +47,7 @@ var possibleWords = () => ["megan", "cigar", "rebut", "sissy", "humph", "awake",
 
 
 const answers = () => [
+  'jamie',
   'cigar',
   'rebut',
   'sissy',
