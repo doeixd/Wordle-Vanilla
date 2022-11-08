@@ -651,5 +651,5 @@ function setup() {
   return possibleWordsWorker;
 }
 
-if (State?.pointer == 30 && !State?.won && State.checked.at(-1)
+if (State?.pointer == 30 && !State?.won && State.checked.at(-1))
   showToast(State?.wordle, null, null, true)
