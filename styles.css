@@ -173,6 +173,7 @@ body > header {
 h1 {
   text-align:center;
   line-height: var(--headerHeight);
+  cursor: pointer;
 }
 
 .header-icon {
