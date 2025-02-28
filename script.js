@@ -39,9 +39,9 @@ let possibleWords;
 // RUNTIME:
 // --------------------------------------------------------
 
-document.addEventListener('keydown', (e, { won } = State) => {
+document.addEventListener('keydown', (e) => {
   if (
-    won ||
+    State.won ||
     activeRow() == 6 ||
     $('stats-container').getAttribute('aria-hidden') == 'false'
   )
@@ -79,8 +79,12 @@ function render(actions, effects = []) {
   
   const effectsToRun = [...effects, paint, persist];
   (async () => {
-    for (let effect of effectsToRun) {
-      await effect(oldGameState, newGameState);
+    try {
+      for (let effect of effectsToRun) {
+        await effect(oldGameState, newGameState);
+      }
+    } catch (e) {
+      console.error(e)
     }
   })();
 
@@ -114,7 +118,7 @@ function backspace() {
 function enter() {
   const { checked, wordle, gameBoard } = State;
   const guess = guesses(gameBoard)[activeRow({ checked })];
-  if (!possibleWords.has(guess)) return badWord();
+  if (possibleWords && !possibleWords.has(guess)) return badWord();
   if (guesses(gameBoard).filter(g => g == guess).length > 1) return badWord('Already guessed')
   if (guess == wordle) return won();
   if (activeRow() == 5) return lost();
@@ -145,11 +149,11 @@ function setStats() {
       stats.gamesPlayed = gameHistory.length;
       stats.winPercent =
         Math.round(
-          (winHistory.reduce((acc, cur) => acc + cur, 0) / stats.gamesPlayed || 0)
-         * 100);
+          (winHistory.reduce((acc, cur) => acc + cur, 0) / stats.gamesPlayed) * 100 || 0
+        );
       
       let currentStreak = 0
-      for (let game of gameHistory.reverse()) {
+      for (let game of [...gameHistory].reverse()) {
         if (!game.won) break
         currentStreak++
       }
@@ -423,7 +427,7 @@ function getValidityStyles(rowNum = activeRow(), idx, gameState = State) {
     const styles = {
       borderColor: 'transparent',
       color: `var(--submittedTextColor)`,
-      backgroundColor: 'var(--wrongLetterColor',
+      backgroundColor: 'var(--wrongLetterColor)',
     };
     if (style == 'rightSpot') styles.backgroundColor = 'var(--rightSpotColor)';
     if (style == 'wrongSpot') styles.backgroundColor = 'var(--wrongSpotColor)';
