@@ -326,6 +326,9 @@ async function animateSumbittedRow(oldState, newState) {
     sumbittedRow.forEach((tile, idx) => {
       tile.classList.remove('guessedLetter');
       const styles = getValidityStyles(activeRow(oldState), idx, oldState);
+      tile.style.perspective = '500px';
+      tile.style.transformStyle = 'preserve-3d';
+      
       tile.animate(
         [
           { transform: 'rotate3d(50, 0, 0, -180deg)', ...styles },
@@ -458,6 +461,10 @@ function closeStatsModal(e) {
 }
 
 function share() {
+    if (!State.won && !State.checked[5]) {
+    showToast('Finish the game first!', 2, null, null, 'z-index:4');
+    return;
+  }
   const share = getEmojiGameBoard();
   navigator.clipboard.writeText(share);
   showToast('Copied to Clipboard', 2, null, null, 'z-index:4');
@@ -611,11 +618,13 @@ function generateWinningMessage(winningRow) {
 }
 
 function getEmojiGameBoard() {
-  return State.gameBoard.reduce((acc, cur, idx) => {
-    const newLine = (idx + 1) % 5 == 0 ? '\n' : '';
+  const submittedRows = State.won ? activeRow() : activeRow() + 1;
+  const tilesToShow = Math.min(submittedRows * 5, 30);
+  return State.gameBoard.slice(0, tilesToShow).reduce((acc, cur, idx) => {
+    const newLine = (idx + 1) % 5 === 0 ? '\n' : '';
     const bgColor = getRowValidityMask(rowNum(idx), State)[idx % 5];
-    if (bgColor == 'rightSpot') return acc + '🟩' + newLine;
-    if (bgColor == 'wrongSpot') return acc + '🟨' + newLine;
+    if (bgColor === 'rightSpot') return acc + '🟩' + newLine;
+    if (bgColor === 'wrongSpot') return acc + '🟨' + newLine;
     return acc + '⬜' + newLine;
   }, '');
 }
