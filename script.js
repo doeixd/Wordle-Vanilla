@@ -115,7 +115,7 @@ function enter() {
   const { checked, wordle, gameBoard } = State;
   const guess = guesses(gameBoard)[activeRow({ checked })];
   if (!possibleWords.has(guess)) return badWord();
-  if (guesses.filter(g => g == guess).length > 1) return showToast('Already guessed', 2)
+  if (guesses.filter(g => g == guess).length > 1) return badWord('Already guessed')
   if (guess == wordle) return won();
   if (activeRow() == 5) return lost();
   return check();
@@ -383,8 +383,8 @@ async function persist(_, newGameState) {
   localStorage.setItem('gameState', JSON.stringify(newGameState));
 }
 
-function badWord() {
-  showToast('Not In Word List');
+function badWord(msg = 'Not In Word List') {
+  showToast(msg);
   const row = getRowEls(activeRow(), false);
   row.animate(
     [
