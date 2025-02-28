@@ -316,20 +316,25 @@ async function animateSumbittedRow(oldState, newState) {
     sumbittedRow.forEach((tile, idx) => {
       tile.classList.remove('guessedLetter');
       const styles = getValidityStyles(activeRow(oldState), idx, oldState);
-      
+
+      // Set perspective and transform style for 3D effect
       tile.style.perspective = '500px';
       tile.style.transformStyle = 'preserve-3d';
-      
+
+      // Two-part animation: flip up to 90deg, then down to 0deg with new styles
       tile.animate(
         [
           { 
             transform: 'rotateX(0deg)', 
-            '-webkit-transform': 'rotateX(0deg)', 
-            ...styles 
+            '-webkit-transform': 'rotateX(0deg)' 
           },
           { 
-            transform: 'rotateX(-180deg)', 
-            '-webkit-transform': 'rotateX(-180deg)', 
+            transform: 'rotateX(90deg)', 
+            '-webkit-transform': 'rotateX(90deg)' 
+          },
+          { 
+            transform: 'rotateX(0deg)', 
+            '-webkit-transform': 'rotateX(0deg)', 
             ...styles 
           },
         ],
@@ -338,11 +343,12 @@ async function animateSumbittedRow(oldState, newState) {
           delay: idx * 300 + 50,
           easing: 'ease-in-out',
           fill: 'forwards',
+          keyframes: [0, 0.5, 1], // Timing: 0% (start), 50% (mid), 100% (end)
         }
       ).onfinish = async () => {
         setStylesOnElement(styles, tile);
-        tile.style.transform = 'rotateX(-180deg)';
-        tile.style['-webkit-transform'] = 'rotateX(-180deg)';
+        tile.style.transform = 'rotateX(0deg)'; // Ensure upright final state
+        tile.style['-webkit-transform'] = 'rotateX(0deg)';
         if (idx === 4) resolve(true);
         if (!idx && newState.won) await animateWinningRow(null, newState);
       };
