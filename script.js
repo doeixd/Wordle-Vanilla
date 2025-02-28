@@ -321,7 +321,11 @@ async function animateSumbittedRow(oldState, newState) {
       tile.style.perspective = '500px';
       tile.style.transformStyle = 'preserve-3d';
 
-      // Two-part animation: flip up to 90deg, then down to 0deg with new styles
+      // Apply styles instantly at the midpoint (50%) without fading
+      setTimeout(() => {
+        setStylesOnElement(styles, tile);
+      }, (idx * 300 + 50) + 300); // Trigger at halfway point of animation
+
       tile.animate(
         [
           { 
@@ -334,8 +338,7 @@ async function animateSumbittedRow(oldState, newState) {
           },
           { 
             transform: 'rotateX(0deg)', 
-            '-webkit-transform': 'rotateX(0deg)', 
-            ...styles 
+            '-webkit-transform': 'rotateX(0deg)' 
           },
         ],
         {
@@ -343,11 +346,9 @@ async function animateSumbittedRow(oldState, newState) {
           delay: idx * 300 + 50,
           easing: 'ease-in-out',
           fill: 'forwards',
-          keyframes: [0, 0.5, 1], // Timing: 0% (start), 50% (mid), 100% (end)
         }
       ).onfinish = async () => {
-        setStylesOnElement(styles, tile);
-        tile.style.transform = 'rotateX(0deg)'; // Ensure upright final state
+        tile.style.transform = 'rotateX(0deg)';
         tile.style['-webkit-transform'] = 'rotateX(0deg)';
         if (idx === 4) resolve(true);
         if (!idx && newState.won) await animateWinningRow(null, newState);
