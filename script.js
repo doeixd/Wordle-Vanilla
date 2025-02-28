@@ -465,7 +465,7 @@ function closeStatsModal() {
 
 function share() {
   if (!State.won && !State.checked[5]) {
-    showToast('Finish a game first!', 2, null, null, 'z-index:4'));
+    showToast('Finish a game first!', 2, null, null, 'z-index:4');
     return;
   }
   const share = getEmojiGameBoard();
