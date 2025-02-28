@@ -115,7 +115,7 @@ function enter() {
   const { checked, wordle, gameBoard } = State;
   const guess = guesses(gameBoard)[activeRow({ checked })];
   if (!possibleWords.has(guess)) return badWord();
-  if (guesses.filter(g => g == guess).length > 1) return badWord('Already guessed')
+  if (guesses().filter(g => g == guess).length > 1) return badWord('Already guessed')
   if (guess == wordle) return won();
   if (activeRow() == 5) return lost();
   return check();
