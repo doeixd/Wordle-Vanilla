@@ -624,7 +624,7 @@ function generateWinningMessage(winningRow) {
 
 function getEmojiGameBoard() {
   const submittedRows = State.won ? activeRow() : activeRow() + 1;
-  const tilesToShow = Math.min(submittedRows * 5, 30);
+  const tilesToShow = Math.min((submittedRows + 1) * 5, 30);
   return State.gameBoard.slice(0, tilesToShow).reduce((acc, cur, idx) => {
     const newLine = (idx + 1) % 5 === 0 ? '\n' : '';
     const bgColor = getRowValidityMask(rowNum(idx), State)[idx % 5];
