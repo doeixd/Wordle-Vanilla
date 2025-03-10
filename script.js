@@ -314,7 +314,7 @@ async function paintStats(_, { stats, winHistory }) {
           backgroundColor: `var(--barRank-${Math.round((rowHeights?.[idx] ?? 0) / 20)})`,
         },
       ],
-      { duration: 350, easing: 'ease-in-out', delay: ((170 * idx) - idx * 50) + 550 }
+      { duration: 350, easing: 'ease-in-out', delay: ((170 * idx) - idx * 50) + 250 }
     )).onfinish = () => {
       bar.parentElement.style.height = `${rowHeights?.[idx] ?? 0}%`;
       bar.parentElement.style.backgroundColor = `var(--barRank-${Math.round(
