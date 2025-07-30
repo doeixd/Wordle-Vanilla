@@ -340,7 +340,7 @@ async function animateSumbittedRow(oldState, newState) {
           { transform: 'rotate3d(0,0,0, 180deg)', ...styles },
         ],
         {
-          duration: 600,
+          duration: 650,
           delay:   (idx *  300 ) + 50,
           easing: 'ease-in-out',
         }
