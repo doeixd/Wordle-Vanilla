@@ -341,7 +341,7 @@ async function animateSumbittedRow(oldState, newState) {
         ],
         {
           duration: 600,
-          delay:  [50, 325, 770, 1220, 1500][idx] || (idx * 375) + 50,
+          delay:   [50, 300, 620, 940, 1190][idx] || (idx * 285) + 50,
           easing: 'ease-in-out',
         }
       ).onfinish = async (_) => {
